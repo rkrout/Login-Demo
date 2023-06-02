@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 require("check-is-not-logged-in.php");
 if(isset($_POST["email"])) {
@@ -8,7 +9,7 @@ if(isset($_POST["email"])) {
     $stmt->execute();
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
     if($user && password_verify($_POST["password"], $user["password"])) {
-        $_SESSION["userId"] = $user["email"];
+        $_SESSION["userId"] = $user["id"];
         $_SESSION["name"] = $user["name"];
         header("Location: index.php");
         die; 

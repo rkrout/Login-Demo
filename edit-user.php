@@ -3,15 +3,12 @@
 session_start();
 require("check-is-logged-in.php");
 require("db.php");
-$stmt = $pdo->prepare("select * from users where email = :email limit 1");
-$stmt->bindParam("email", $_GET["email"]);
+$stmt = $pdo->prepare("select * from users where id = :id limit 1");
+$stmt->bindParam("id", $_GET["id"]);
 $stmt->execute();
 $user = $stmt->fetch();
 
-
 ?>
-
-
 
 <?php require("header.php") ?>
 
@@ -27,9 +24,9 @@ $user = $stmt->fetch();
     <input type="text" name="email" id="email" value="<?= $user["email"] ?>"  class="border border-gray-300 rounded px-4 py-2 w-full">
    </div>
    <div class="flex gap-1">
-   <a class="px-4 py-2 bg-gray-600 rounded text-white" href="index.php">Go Back</a>
+      <a class="px-4 py-2 bg-gray-600 rounded text-white" href="index.php">Go Back</a>
 
-<input type="submit" name="submit" class="px-4 py-2 rounded-md bg-orange-600 text-white hover:bg-orange-800 disabled:bg-orange-400 focus:ring-1 focus:ring-orange-600 focus:ring-offset-1" value="Save">
+      <input type="submit" name="submit" class="px-4 py-2 rounded-md bg-orange-600 text-white hover:bg-orange-800 disabled:bg-orange-400 focus:ring-1 focus:ring-orange-600 focus:ring-offset-1" value="Save">
    </div>
 </form>
 

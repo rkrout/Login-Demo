@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 require("check-is-logged-in.php");
 if(isset($_POST["name"])) {

@@ -1,8 +1,8 @@
 <?php 
     require("db.php");
-    $stmt = $pdo->prepare("select * from users where email = :email and email != :old_email limit 1");
+    $stmt = $pdo->prepare("select * from users where email = :email and id != :id limit 1");
     $stmt->bindParam("email", $_POST["email"]);
-    $stmt->bindParam("old_email", $_POST["old_email"]);
+    $stmt->bindParam("id", $_POST["id"]);
     $stmt->execute();
     $user = $stmt->fetch();
     if($user){

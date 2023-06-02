@@ -3,8 +3,8 @@ session_start();
 if(isset($_POST["oldPassword"])){
     require("db.php");
 
-    $stmt = $pdo->prepare("select * from users where email = :email limit 1");
-    $stmt->bindParam("email", $_SESSION["userId"]);
+    $stmt = $pdo->prepare("select * from users where id = :id limit 1");
+    $stmt->bindParam("id", $_SESSION["userId"]);
     $stmt->execute();
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 

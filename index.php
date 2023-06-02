@@ -1,15 +1,18 @@
 <?php
+
 session_start();
 require("check-is-logged-in.php");
 require("db.php");
-$stmt = $pdo->prepare("select name, email from users");
+$stmt = $pdo->prepare("select * from users");
 $stmt->execute();
 $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-
 ?>
 
-<?php require("header.php") ?>
+<?php 
+$title = "Home";
+require("header.php") 
+?>
 <div class="max-w-5xl mx-auto my-5">
 <?php if(isset($_SESSION["userId"])): ?>
     <div class="flex gap-2 items-center mb-10">
@@ -35,9 +38,9 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <td class="p-2"><?= $user["email"] ?></td>
             <td class="p-2">
                 <div class="justify-center flex gap-1">
-                <a class="px-2 py-1 rounded bg-yellow-600 text-white" href="edit-user.php?email=<?= $user["email"] ?>">Edit</a>
+                <a class="px-2 py-1 rounded bg-yellow-600 text-white" href="edit-user.php?id=<?= $user["id"] ?>">Edit</a>
                 <form class="px-2 py-1 rounded bg-red-600 text-white" action="delete-user.php" method="post">
-                    <input type="hidden" name="email" value="<?= $user["email"] ?>">
+                    <input type="hidden" name="id" value="<?= $user["id"] ?>">
                     <button type="submit">Delete</button>
                 </form>
                 </div>
