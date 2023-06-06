@@ -1,17 +1,28 @@
 <?php
-$start_date = "2010-10-01 10:00:00";
-$end_date = "2010-10-02 9:00:00";
+$start_date = $_POST["punch_in_time"];
+$end_date = $_POST["punch_out_time"];
 
 if(strtotime($start_date) > strtotime($end_date)) {
-    // invalid time
-} else {
-    echo "valid";
+    die("<script>alert('Punch in date must be smaller than punch out date');window.location.reload()</script>");
 }
 
+$stmt = $pdo->prepare("DELETE FROM timings WHERE id = :id");
+$stmt->bindParam("id", $_GET["id"]);
+$stmt->execute();
+
 if((new DateTime($start_date))->format('Y-m-d') == (new DateTime($end_date))->format('Y-m-d')) {
-    // same day
-} else {
-    echo 'not same day';
+    $stmt = $pdo->prepare("
+        INSERT INTO timings
+        (punch_in_time, punch_out_time, user_id)
+        VALUES 
+        (:punch_in_time, :punch_out_time, :user_id)
+    ");
+    $stmt->bindParam("user_id", $_POST["user_id"]);
+    $stmt->bindParam("punch_in_time", $_POST["punch_in_time"]);
+    $stmt->bindParam("punch_out_time", $_POST["punch_out_time"]);
+    $stmt->execute();
+
+    die("<script>alert('Data edited successfully'); window.location.href='/timing/index.php'</script>");
 }
 
 $period = new DatePeriod(
@@ -40,6 +51,19 @@ array_push($final_date_array, [
     "punch_out_time" => (new DateTime($end_date))->format('Y-m-d H:i:s')
 ]);
 
-print_r($final_date_array);
+foreach ($final_date_array as $date) {
+    $stmt = $pdo->prepare("
+        INSERT INTO timings
+        (punch_in_time, punch_out_time, user_id)
+        VALUES 
+        (:punch_in_time, :punch_out_time, :user_id)
+    ");
+    $stmt->bindParam("user_id", $_POST["user_id"]);
+    $stmt->bindParam("punch_in_time", $date["punch_in_time"]);
+    $stmt->bindParam("punch_out_time", $date["punch_out_time"]);
+    $stmt->execute();
+}
+
+die("<script>alert('Data edited successfully'); window.location.href='/timing/index.php'</script>");
 
 ?>
