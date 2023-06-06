@@ -15,7 +15,6 @@ $timings = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <tr>
             <th class="p-2">Name</th>
             <th class="p-2">Email</th>
-            <th class="p-2">Date</th>
             <th class="p-2">Punch In</th>
             <th class="p-2">Punch Out</th>
             <th class="p-2">Total Break Time</th>
@@ -28,9 +27,8 @@ $timings = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <tr class="border-t border-t-gray-300">
                 <td class="p-2"><?= $timing["user_name"] ?></td>
                 <td class="p-2"><?= $timing["user_email"] ?></td>
-                <td class="p-2"><?= date("d-m-Y", strtotime($timing["date"])) ?></td>
-                <td class="p-2"><?= date("H:i A", strtotime($timing["punch_in_time"])) ?></td>
-                <td class="p-2"><?= date("H:i A", strtotime($timing["punch_out_time"])) ?></td>
+                <td class="p-2"><?= date("d-m-Y h:i A", strtotime($timing["punch_in_time"])) ?></td>
+                <td class="p-2"><?= date("d-m-Y h:i A", strtotime($timing["punch_out_time"])) ?></td>
                 <td class="p-2"><?= intdiv($timing["total_break_time"], 60) . "hr " . $timing["total_break_time"] % 60 . "min" ?></td>
                 <td class="p-2"><?= intdiv($timing["overtime"], 60) . "hr " . $timing["overtime"] % 60 . "min"?></td>
                 <td class="p-2">

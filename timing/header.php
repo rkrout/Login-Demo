@@ -1,3 +1,4 @@
+<?php $file_name = explode(".", basename($_SERVER['PHP_SELF']))[0]; ?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -14,14 +15,14 @@
 <body>
     <nav class="bg-orange-600 h-16 shadow-lg">
         <div class="max-w-5xl mx-auto h-full flex items-center justify-between">
-            <h1 class="text-2xl text-white font-bold">Daily Timing</h1>
+            <a href="/timing/index.php" class="text-2xl text-white font-bold">Daily Timing</a>
 
             <ul class="flex gap-8 text-white">
                 <li>
-                    <a href="index.php">Home</a>
+                    <a href="index.php" class="<?= in_array($file_name, ["index", "edit-timing"]) ? "text-white font-bold" : "text-gray-100" ?>">Home</a>
                 </li>
                 <li>
-                    <a href="/timing/settings.php">Setting</a>
+                    <a href="/timing/settings.php" class="<?= in_array($file_name, ["settings", "edit-settings"]) ? "text-white font-bold" : "text-gray-100" ?>">Setting</a>
                 </li>
             </ul>
         </div>

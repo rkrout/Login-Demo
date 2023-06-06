@@ -1,7 +1,6 @@
 <?php
 
 session_start();
-
 require("check-is-logged-in.php");
 require("db.php");
 
@@ -12,7 +11,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <?php 
-    $title = "Home";
+    $page_title = "Home";
     require("header.php") 
 ?>
 <div class="max-w-5xl mx-auto my-5">
