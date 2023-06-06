@@ -1,13 +1,17 @@
 <?php
 
 session_start();
+
 require("check-is-logged-in.php");
+
 if(isset($_POST["name"])) {
     require("db.php");
+
     $stmt = $pdo->prepare("select * from users where email = :email limit 1");
     $stmt->bindParam("email", $_POST["email"]);
     $stmt->execute();
     $user = $stmt->fetch();
+    
     if($user){
         echo "<script>alert('Email already exists')</script>";
     } else {
