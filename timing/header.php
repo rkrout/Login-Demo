@@ -2,14 +2,53 @@
 
 <!DOCTYPE html>
 <html lang="en">
-    
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= isset($page_title) ? $page_title : "Timing" ?></title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+    <style>
+        .dt-buttons {
+            display: flex;
+            gap: 4px;
+            margin: 12px 0px;
+            margin-bottom: -40px;
+        }
+        .dt-button {
+            padding: 6px 12px;
+            border-radius: 6px;
+            background-color: #ccc;
+        }
+        .dataTables_filter {
+            float: right;
+            display: inline-block;
+            margin-bottom: 24px;
+        }
+        .dataTables_filter input{
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            padding: 8px;
+            margin-left: 12px;
+        }
+        .dataTables_paginate.paging_simple_numbers {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            float: right;
+            margin-top: -20px;
+        }
+        .paginate_button {
+            padding: 4px 8px;
+            border-radius: 4px;
+            background-color: #ccc;
+            cursor: pointer;
+        }
+    </style>
 </head>
 
 <body>

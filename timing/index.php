@@ -2,7 +2,29 @@
 
 require("db.php");
 
-$stmt = $pdo->prepare("SELECT users.name AS user_name, users.email AS user_email, timings.* FROM timings INNER JOIN users ON users.id = timings.user_id");
+$sql = "
+SELECT 
+    users.name AS user_name, 
+    users.email AS user_email, 
+    timings.* 
+FROM timings 
+INNER JOIN users ON users.id = timings.user_id
+";
+
+// if(isset($_GET["from_date"]) && isset($_GET["from_date"])) {
+//     $sql .= " WHERE punch_in_time >= :from_date AND punch_out_time <=  :to_date";
+// }
+if(isset($_GET["from_date"]) && isset($_GET["from_date"])) {
+    $sql .= " WHERE DATE(punch_in_time) >= :from_date AND DATE(punch_out_time) <= :to_date";
+}
+
+$stmt = $pdo->prepare($sql);
+
+if(isset($_GET["from_date"]) && isset($_GET["from_date"])) {
+    $stmt->bindParam("from_date", $_GET["from_date"]);
+    $stmt->bindParam("to_date", $_GET["to_date"]);
+}
+
 $stmt->execute();
 $timings = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -10,10 +32,24 @@ $timings = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <?php require("header.php") ?>
 
-<a href="/timing/create-timing.php" class="px-4 py-2 rounded-md bg-orange-600 text-white hover:bg-orange-800 disabled:bg-orange-400 
-focus:ring-1 focus:ring-orange-600 focus:ring-offset-1 mb-3">Create New</a>
+<form class="flex items-center gap-2">
+    From: <input type="date" name="from_date" id="from_date" class="border border-gray-300 rounded px-4 py-2 w-full focus:ring-orange-600
+    focus:ring-1 focus:border-orange-600 outline-none" style="max-width: 200px" value="<?= $_GET["from_date"] ?? "" ?>">
 
-<table class="w-full border border-gray-300 rounded max-w-7xl mx-auto my-5">
+    To: <input type="date" name="to_date" id="to_date" class="border border-gray-300 rounded px-4 py-2 w-full focus:ring-orange-600
+    focus:ring-1 focus:border-orange-600 outline-none" style="max-width: 200px" value="<?= $_GET["to_date"] ?? "" ?>">
+
+    <button type="submit" class="px-4 py-2 rounded-md bg-purple-600 text-white hover:bg-purple-800 disabled:bg-purple-400 focus:ring-1 
+    focus:ring-purple-600 focus:ring-offset-1 mb-3">Search</button>
+
+    <button type="reset" type="submit" class="btn-reset px-4 py-2 rounded-md bg-gray-600 text-white hover:bg-gray-800 disabled:bg-gray-400 focus:ring-1 
+    focus:ring-gray-600 focus:ring-offset-1 mb-3">clear</button>
+
+    <a href="/timing/create-timing.php" class="px-4 py-2 rounded-md bg-orange-600 text-white hover:bg-orange-800 disabled:bg-orange-400 
+    focus:ring-1 focus:ring-orange-600 focus:ring-offset-1 mb-3">Create New</a>
+</form>
+
+<table class="w-full border border-gray-300 rounded max-w-7xl mx-auto my-5" id="dataTable">
     <thead class="bg-gray-100">
         <tr>
             <th class="p-2">Name</th>
@@ -27,12 +63,6 @@ focus:ring-1 focus:ring-orange-600 focus:ring-offset-1 mb-3">Create New</a>
         </tr>
     </thead>
     <tbody class="text-center">
-        <?php if(count($timings) == 0): ?>
-            <tr>
-                <td colspan="7">No Records Found</td>
-            </tr>
-        <?php endif; ?>
-
         <?php foreach($timings as $timing): ?>
             <tr class="border-t border-t-gray-300">
                 <td class="p-2"><?= $timing["user_name"] ?></td>
@@ -50,4 +80,24 @@ focus:ring-1 focus:ring-orange-600 focus:ring-offset-1 mb-3">Create New</a>
         <?php endforeach; ?>
     </tbody>
 </table>
+
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js"></script> 
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.1/js/buttons.print.min.js"></script>
+<script>
+    document.querySelector(".btn-reset").onclick = event => {
+        window.location.href = "/timing/index.php"
+    }
+
+    $(document).ready(function() {
+    $('#dataTable').DataTable( {
+        dom: 'Bfrtip',
+        buttons: [
+            'copy', 'csv', 'excel', 'pdf', 'print'
+        ]
+    } );
+} );
+</script>
 <?php require("footer.php") ?>
+
