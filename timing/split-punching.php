@@ -33,45 +33,37 @@ if((new DateTime($start_date))->format('Y-m-d') == (new DateTime($end_date))->fo
     die("<script>alert('Data edited successfully dd'); window.location.href='/timing/index.php'</script>");
 }
 
-$period = new DatePeriod(
-     new DateTime($start_date),
-     new DateInterval('P1D'),
-     new DateTime($end_date)
-);
+require("date-utils.php");
 
-$final_date_array = [];
+$date_range = createDateRangeArray($start_date, $end_date);
 
-$period_arr = [];
+$final_date_range = [];
 
-foreach ($period as $key => $value) {
-    array_push($period_arr, $value);
-}
-
-for($i=0; $i < count($period_arr); $i++) {
+for($i = 0; $i < count($date_range); $i++) {
     if($i == 0) {
-        array_push($final_date_array, [
-            "punch_in_time" => $period_arr[$i]->format('Y-m-d H:i:s'),
-            "punch_out_time" => $period_arr[$i]->setTime(23, 59, 59)->format('Y-m-d H:i:s')
+        array_push($final_date_range, [
+            "punch_in_time" => $date_range[$i] . " " . date("H:i:s", strtotime($start_date)),
+            "punch_out_time" => $date_range[$i] . " 23:59:59"
         ]); 
-    }else {
-        array_push($final_date_array, [
-            "punch_in_time" => $period_arr[$i]->setTime(00, 00, 00)->format('Y-m-d H:i:s'),
-            "punch_out_time" => $period_arr[$i]->setTime(23, 59, 59)->format('Y-m-d H:i:s')
-        ]);  
-    }  
+    }else if($i == count($date_range) - 1){
+        array_push($final_date_range, [
+            "punch_in_time" => $date_range[$i] . " 00:00:00",
+            "punch_out_time" => $date_range[$i] . " " . date("H:i:s", strtotime($end_date))
+        ]); 
+    } else {
+        array_push($final_date_range, [
+            "punch_in_time" => $date_range[$i] . " 00:00:00",
+            "punch_out_time" => $date_range[$i] . " 23:59:59"
+        ]); 
+    } 
 }
-
-array_push($final_date_array, [
-    "punch_in_time" => (new DateTime($end_date))->setTime(00, 00, 00)->format('Y-m-d H:i:s'),
-    "punch_out_time" => (new DateTime($end_date))->format('Y-m-d H:i:s')
-]);
 
 // echo "<pre>";
-// echo print_r($final_date_array);
+// echo print_r($final_date_range);
 // echo "</pre>";
 // die;
 
-foreach ($final_date_array as $date) {
+foreach ($final_date_range as $date) {
     $stmt = $pdo->prepare("
         INSERT INTO timings
         (punch_in_time, punch_out_time, user_id)

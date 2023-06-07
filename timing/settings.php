@@ -17,6 +17,7 @@ $settings = $stmt->fetch(PDO::FETCH_ASSOC);
             <th class="p-2">Break Time</th>
             <th class="p-2">Break Interval</th>
             <th class="p-2">Split Punch</th>
+            <th class="p-2">Double Time</th>
             <th class="p-2">Action</th>
         </tr>
     </thead>
@@ -32,6 +33,7 @@ $settings = $stmt->fetch(PDO::FETCH_ASSOC);
                     <span class="material-symbols-outlined text-red-600">cancel</span>
                 <?php endif; ?>
             </td>
+            <td class="p-2"><?= $settings["double_time"] ?>hr</td>
             <td class="p-2">
                 <a href="/timing/edit-settings.php" class="px-2 py-1 bg-yellow-600 rounded bg-yello-600 text-white 
                 focus:ring-offset-1 focus:ring-yellow-600 transition-all duration-300 hover:bg-yellow-800">Edit</a>

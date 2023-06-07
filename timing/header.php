@@ -35,18 +35,36 @@
             padding: 8px;
             margin-left: 12px;
         }
-        .dataTables_paginate.paging_simple_numbers {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            float: right;
-            margin-top: -20px;
+        @media (max-width: 768px) {
+            .dataTables_filter{
+                float: none;
+            }
+            .dt-buttons{
+                margin-bottom: 12px;
+            }
+        }
+        .paginate_button.current{
+            border: 1px solid #444 !important;
+        }
+        .paginate_button.disabled{
+            display: none;
         }
         .paginate_button {
             padding: 4px 8px;
             border-radius: 4px;
             background-color: #ccc;
             cursor: pointer;
+            margin-right: 4px;
+        },
+        .paginate_button:last-child{
+            margin-right: 0px;
+        }
+        .dataTables_paginate.paging_simple_numbers {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            float: right;
+            margin-top: -20px;
         }
     </style>
 </head>
@@ -67,7 +85,7 @@
         </div>
     </nav>
 
-    <div class="max-w-5xl my-5 mx-auto px-3">
+    <div class="max-w-6xl my-5 mx-auto px-3">
 
    
   
