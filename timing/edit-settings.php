@@ -13,12 +13,14 @@ if(isset($_POST["break_time"])) {
             break_time = :break_time, 
             break_interval = :break_interval, 
             regular_time = :regular_time,
-            is_split_punch = :is_split_punch
+            is_split_punch = :is_split_punch,
+            double_time = :double_time
     ");
     $stmt->bindParam("break_time", $_POST["break_time"]);
     $stmt->bindParam("break_interval", $_POST["break_interval"]);
     $stmt->bindParam("regular_time", $_POST["regular_time"]);
     $stmt->bindParam("is_split_punch", $_POST["is_split_punch"]);
+    $stmt->bindParam("double_time", $_POST["double_time"]);
     $stmt->execute();
     die("<script>alert('Setting updated successfully'); window.location.href='/timing/settings.php'</script>");
 }
@@ -46,6 +48,12 @@ if(isset($_POST["break_time"])) {
         <label for="regular_time" class="mb-1 block">Regular Time</label>
         <input type="number" name="regular_time" id="regular_time" class="border border-gray-300 rounded px-4 py-2 w-full focus:ring-orange-600
         focus:ring-1 focus:border-orange-600 outline-none" value="<?= $settings["regular_time"] ?>">
+    </div>
+
+    <div class="mb-6">
+        <label for="double_time" class="mb-1 block">Double Time (in hour)</label>
+        <input type="number" name="double_time" id="double_time" class="border border-gray-300 rounded px-4 py-2 w-full focus:ring-orange-600
+        focus:ring-1 focus:border-orange-600 outline-none" value="<?= $settings["double_time"] ?>">
     </div>
 
     <div class="mb-6">

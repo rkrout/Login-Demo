@@ -31,9 +31,21 @@ foreach ($timings as $timing) {
         $over_time = 0;
     }
 
-    $stmt = $pdo->prepare("UPDATE timings SET overtime = :overtime, total_break_time = :total_break_time WHERE id = :id");
+    // calculating double time
+    $double_time_in_sec = $settings["double_time"] * 3600;
+
+    if($working_time_in_second > $double_time_in_sec) {
+        $over_time_in_second = $working_time_in_second - $double_time_in_sec;
+    
+        $double_time = $over_time_in_second / 60;
+    } else {
+        $double_time = 0;
+    }
+
+    $stmt = $pdo->prepare("UPDATE timings SET overtime = :overtime, total_break_time = :total_break_time, double_time = :double_time WHERE id = :id");
     $stmt->bindParam("overtime", $over_time);
     $stmt->bindValue("total_break_time", $total_break_time);
     $stmt->bindParam("id", $timing["id"]);
+    $stmt->bindParam("double_time", $double_time);
     $stmt->execute();
 }

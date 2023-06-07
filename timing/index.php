@@ -61,6 +61,7 @@ $timings = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <th class="p-2">Punch Out</th>
                 <th class="p-2">Total Break Time</th>
                 <th class="p-2">Overtime</th>
+                <th class="p-2">Double Time</th>
                 <th class="p-2">Action</th>
             </tr>
         </thead>
@@ -74,6 +75,7 @@ $timings = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <td class="p-2"><?= date("d-m-Y h:i A", strtotime($timing["punch_out_time"])) ?></td>
                     <td class="p-2"><?= intdiv($timing["total_break_time"], 60) . ":" . $timing["total_break_time"] % 60 . "" ?></td>
                     <td class="p-2"><?= intdiv($timing["overtime"], 60) . ":" . $timing["overtime"] % 60 . ""?></td>
+                    <td class="p-2"><?= intdiv($timing["double_time"], 60) . ":" . $timing["double_time"] % 60 ?></td>
                     <td class="p-2">
                         <a href="/timing/edit-timing.php?id=<?= $timing["id"] ?>" class="px-2 py-1 bg-yellow-600 rounded bg-yello-600 text-white 
                         focus:ring-offset-1 focus:ring-yellow-600 transition-all duration-300 hover:bg-yellow-800">Edit</a>
@@ -93,6 +95,7 @@ $timings = $stmt->fetchAll(PDO::FETCH_ASSOC);
         window.location.href = "/timing/index.php"
     }
 
+
     $(document).ready(function() {
         $("#dataTable").DataTable({
             dom: "Bfrtip",
@@ -106,7 +109,12 @@ $timings = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 "copy", "csv", "excel", "pdf", "print"
             ]
         });
+
+    $("span .paginate_button").length == 1 ? $("span .paginate_button").hide() : "";
+
     });
+
+
 </script>
 
 <?php require("footer.php") ?>
