@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    .form-control {
+        @apply border border-gray-300 rounded px-4 py-2 w-full focus:ring-orange-600 focus:ring-1 focus:border-orange-600 
+        outline-none;
+    }
+
+    .table-responsive{
+        @apply overflow-auto;
+    }
+
+    .table {
+        @apply w-full border border-gray-300 rounded mx-auto mb-5;
+    }
+
+    .table thead {
+        @apply bg-gray-100;
+    }
+
+    .table th,
+    .table td{
+        @apply py-3 px-2;
+    }
+
+    .table tr {
+        @apply border-t border-t-gray-300;
+    }
+
+    .table tbody {
+        @apply text-center;
+    }
+
+    .btn {
+        @apply px-4 py-2 rounded-md focus:ring-offset-2 transition-all duration-300;
+    }
+
+    .btn-sm {
+        @apply px-2 py-1 rounded;
+    }
+
+    .btn-warning {
+        @apply bg-yellow-600 text-white focus:ring-yellow-600 hover:bg-yellow-800;
+    }
+
+    .btn-purple {
+        @apply bg-purple-600 text-white focus:ring-purple-600 hover:bg-purple-800k;
+    }
+
+    .btn-primary {
+        @apply bg-orange-600 text-white focus:ring-orange-600 hover:bg-orange-800;
+    }
+}
+

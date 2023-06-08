@@ -1,6 +1,7 @@
 <?php
 
-require("db.php");
+require("db-utils.php");
+require("date-utils.php");
 
 $sql = "
 SELECT 
@@ -50,37 +51,45 @@ $timings = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
 </form>
 
-<div class="overflow-auto">
-    <table class="w-full border border-gray-300 rounded max-w-8xl mx-auto mb-5 compact" style="min-width: 1024px" id="dataTable">
-        <thead class="bg-gray-100">
+<div class="table-responsive">
+    <table class="table min-w-[1024px]" id="dataTable">
+        <thead>
             <tr>
-                <th class="py-3 px-2">Name</th>
-                <th class="py-3 px-2">Email</th>
-                <th class="py-3 px-2">Date</th>
-                <th class="py-3 px-2">Punch In</th>
-                <th class="py-3 px-2">Punch Out</th>
-                <th class="py-3 px-2">Total Break Time</th>
-                <th class="py-3 px-2">Overtime</th>
-                <th class="py-3 px-2">Double Time</th>
-                <th class="py-3 px-2">Total Working Time</th>
-                <th class="py-3 px-2">Action</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Date</th>
+                <th>Punch In</th>
+                <th>Punch Out</th>
+                <th>Break Time</th>
+                <th>Overtime</th>
+                <th>Double Time</th>
+                <th>Working Time</th>
+                <th>Action</th>
             </tr>
         </thead>
-        <tbody class="text-center">
+        <tbody>
             <?php foreach($timings as $timing): ?>
-                <tr class="border-t border-t-gray-300">
-                    <td class="py-3 px-2"><?= $timing["user_name"] ?></td>
-                    <td class="py-3 px-2"><?= $timing["user_email"] ?></td>
-                    <td class="py-3 px-2"><?= date("d-m-Y h:i A", strtotime($timing["punch_in_time"])) ?></td>
-                    <td class="py-3 px-2"><?= date("d-m-Y h:i A", strtotime($timing["punch_in_time"])) ?></td>
-                    <td class="py-3 px-2"><?= date("d-m-Y h:i A", strtotime($timing["punch_out_time"])) ?></td>
-                    <td class="py-3 px-2"><?= intdiv($timing["total_break_time"], 60) . ":" . $timing["total_break_time"] % 60 . "" ?></td>
-                    <td class="py-3 px-2"><?= intdiv($timing["overtime"], 60) . ":" . $timing["overtime"] % 60 . ""?></td>
-                    <td class="py-3 px-2"><?= intdiv($timing["double_time"], 60) . ":" . $timing["double_time"] % 60 ?></td>
-                    <td class="py-3 px-2">12:23:00</td>
-                    <td class="py-3 px-2">
-                        <a href="/timing/edit-timing.php?id=<?= $timing["id"] ?>" class="px-2 py-1 bg-yellow-600 rounded bg-yello-600 text-white 
-                        focus:ring-offset-1 focus:ring-yellow-600 transition-all duration-300 hover:bg-yellow-800">Edit</a>
+                <tr>
+                    <td><?= $timing["user_name"] ?></td>
+
+                    <td><?= $timing["user_email"] ?></td>
+
+                    <td><?= date("d-m-Y", strtotime($timing["date"])) ?></td>
+
+                    <td><?= date("d-m-Y h:i A", strtotime($timing["punch_in_time"])) ?></td>
+
+                    <td><?= date("d-m-Y h:i A", strtotime($timing["punch_out_time"])) ?></td>
+
+                    <td><?= get_sec_to_time($timing["break_time"]) ?></td>
+
+                    <td><?= get_sec_to_time($timing["over_time"]) ?></td>
+
+                    <td><?= get_sec_to_time($timing["double_time"]) ?></td>
+
+                    <td><?= get_sec_to_time($timing["working_time"]) ?></td>
+
+                    <td>
+                        <a href="/timing/edit-timing.php?id=<?= $timing["id"] ?>" class="btn btn-warning btn-sm">Edit</a>
                     </td>
                 </tr>
             <?php endforeach; ?>
@@ -91,7 +100,7 @@ $timings = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.3.1/js/dataTables.buttons.min.js"></script> 
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js"></script>
-<script src="https://cdn.datatables.net/buttons/1.2.1/js/buttons.print.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.2.1/js/buttons.print.min.js"></script>
 
 <script>
     $(document).ready(function() {
@@ -102,11 +111,6 @@ $timings = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $("#dataTable").DataTable({
             dom: "Bfrtip",
             pageLength:10,
-            // processing: true,
-            // serverSide: true,
-            // ajax: {
-            //     url:  "/timing/ajax.php?action=get_timing_records&&punch_in_time=<?= $_GET["from_date"] ?? "" ?>&&punch_out_time=<?= $_GET["to_date"] ?? "" ?>",
-            // },
             buttons: [
                 "copy", "csv", "excel", "pdf", "print"
             ]

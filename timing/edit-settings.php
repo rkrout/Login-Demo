@@ -1,29 +1,31 @@
 <?php
 
-require("db.php");
-
-$stmt = $pdo->prepare("SELECT * FROM settings LIMIT 1");
-$stmt->execute();
-$settings = $stmt->fetch(PDO::FETCH_ASSOC);
+require("db-utils.php");
+require_once("date-utils.php");
 
 if(isset($_POST["break_time"])) {
-    $stmt = $pdo->prepare("
+    $sql = "
         UPDATE settings 
         SET 
             break_time = :break_time, 
             break_interval = :break_interval, 
             regular_time = :regular_time,
-            is_split_punch = :is_split_punch,
+            punch_type = :punch_type,
             double_time = :double_time
-    ");
-    $stmt->bindParam("break_time", $_POST["break_time"]);
-    $stmt->bindParam("break_interval", $_POST["break_interval"]);
-    $stmt->bindParam("regular_time", $_POST["regular_time"]);
-    $stmt->bindParam("is_split_punch", $_POST["is_split_punch"]);
-    $stmt->bindParam("double_time", $_POST["double_time"]);
-    $stmt->execute();
+    ";
+
+    query($sql, [
+        "break_time" => $_POST["break_time"] * 60,
+        "break_interval" => $_POST["break_interval"] * 3600,
+        "regular_time" => $_POST["regular_time"] * 3600,
+        "punch_type" => $_POST["punch_type"],
+        "double_time" => $_POST["double_time"] * 3600
+    ]);
+
     die("<script>alert('Setting updated successfully'); window.location.href='/timing/settings.php'</script>");
 }
+
+$settings = find_one("SELECT * FROM settings LIMIT 1");
 
 ?>
 
@@ -34,39 +36,34 @@ if(isset($_POST["break_time"])) {
 
     <div class="mb-6">
         <label for="break_time" class="mb-1 block">Break Time (in minute)</label>
-        <input type="number" name="break_time" id="break_time" class="border border-gray-300 rounded px-4 py-2 w-full focus:ring-orange-600
-        focus:ring-1 focus:border-orange-600 outline-none" value="<?= $settings["break_time"] ?>">
-    </div>
-
-    <div class="mb-6">
-        <label for="break_interval" class="mb-1 block">Break Interval (in hour)</label>
-        <input type="number" name="break_interval" id="break_interval" class="border border-gray-300 rounded px-4 py-2 w-full focus:ring-orange-600
-        focus:ring-1 focus:border-orange-600 outline-none" value="<?= $settings["break_interval"] ?>">
+        <input type="number" name="break_time" id="break_time" class="form-control" value="<?= get_sec_to_minute($settings["break_time"]) ?>">
     </div>
     
     <div class="mb-6">
-        <label for="regular_time" class="mb-1 block">Regular Time</label>
-        <input type="number" name="regular_time" id="regular_time" class="border border-gray-300 rounded px-4 py-2 w-full focus:ring-orange-600
-        focus:ring-1 focus:border-orange-600 outline-none" value="<?= $settings["regular_time"] ?>">
+        <label for="break_interval" class="mb-1 block">Break Interval (in hour)</label>
+        <input type="number" name="break_interval" id="break_interval" class="form-control" value="<?= get_sec_to_hour($settings["break_interval"]) ?>">
+    </div>
+    
+    <div class="mb-6">
+        <label for="regular_time" class="mb-1 block">Regular Time (in hour)</label>
+        <input type="number" name="regular_time" id="regular_time" class="form-control" value="<?= get_sec_to_hour($settings["regular_time"]) ?>">
     </div>
 
     <div class="mb-6">
         <label for="double_time" class="mb-1 block">Double Time (in hour)</label>
-        <input type="number" name="double_time" id="double_time" class="border border-gray-300 rounded px-4 py-2 w-full focus:ring-orange-600
-        focus:ring-1 focus:border-orange-600 outline-none" value="<?= $settings["double_time"] ?>">
+        <input type="number" name="double_time" id="double_time" class="form-control" value="<?= get_sec_to_hour($settings["double_time"]) ?>">
     </div>
 
     <div class="mb-6">
-        <label for="is_split_punch" class="mb-1 block">Punch Type</label>
-        <select name="is_split_punch" id="is_split_punch" class="border border-gray-300 rounded px-4 py-2 w-full focus:ring-orange-600
-        focus:ring-1 focus:border-orange-600 outline-none">
-            <option <?= $settings["is_split_punch"] == 0 ? "selected" : "" ?> value="0">In Punch</option>
-            <option <?= $settings["is_split_punch"] ? "selected" : "" ?> value="1">Split Punch</option>
+        <label for="punch_type" class="mb-1 block">Punch Type</label>
+        <select name="punch_type" id="punch_type" class="form-control">
+            <option <?= $settings["punch_type"] == "in_punch" ? "selected" : "" ?> value="in_punch">In Punch</option>
+            <option <?= $settings["punch_type"] == "split_punch" ? "selected" : "" ?> value="split_punch">Split Punch</option>
+            <option <?= $settings["punch_type"] == "majority_hours" ? "selected" : "" ?> value="majority_hours">Majority Hours</option>
         </select>
     </div>
 
-    <button class="px-4 py-2 rounded-md bg-orange-600 text-white hover:bg-orange-800 disabled:bg-orange-400 
-    focus:ring-1 focus:ring-orange-600 focus:ring-offset-1">Update</button>
+    <button class="btn btn-primary">Update</button>
 </form>
 
 <?php require("footer.php") ?>

@@ -1,6 +1,11 @@
 <?php 
 
-function get_time_difference_in_sec($first_time, $second_time)
+function is_greater($first_date, $second_date)
+{
+    return strtotime($first_date) > strtotime($second_date);
+}
+
+function get_time_diff_in_sec($first_time, $second_time)
 {
     return strtotime($first_time) - strtotime($second_time);
 }
@@ -31,9 +36,11 @@ function get_dates_between($from_date, $to_date)
     return $date_between;
 }
 
-function get_split_timings($start_date, $end_date, $between_dates)
+function get_split_times($start_date, $end_date)
 {
-    $split_timings = [];
+    $between_dates = get_dates_between($start_date, $end_date);
+
+    $split_times = [];
 
     for($i = 0; $i < count($between_dates); $i++) 
     {
@@ -58,24 +65,27 @@ function get_split_timings($start_date, $end_date, $between_dates)
             $punch_out_time = $between_dates[$i] . " 23:59:59";
         } 
 
-        array_push($split_timings, [
+        array_push($split_times, [
             "punch_in_time" => $punch_in_time,
             "punch_out_time" => $punch_out_time,
-            "working_time" => get_time_difference_in_sec($punch_out_time, $punch_in_time)
+            "working_time" => get_time_diff_in_sec($punch_out_time, $punch_in_time)
         ]);
     }
 
-    return $split_timings;
+    return $split_times;
 }
 
-function get_majority_date($split_times)
+function get_majority_date($start_time, $end_time)
 {
+    $split_times = get_split_times($start_time, $end_time);
+
     $largest_working_time = $split_times[0]["working_time"];
+    
     $majority_date = date("Y-m-d", strtotime($split_times[0]["punch_in_time"]));
 
     foreach ($split_times as $split_time) 
     {
-        if($split_time["working_time"] > $majority_date) 
+        if($split_time["working_time"] > $largest_working_time) 
         {
             $largest_working_time = $split_time["working_time"];
             $majority_date = date("Y-m-d", strtotime($split_time["punch_in_time"]));
@@ -85,4 +95,27 @@ function get_majority_date($split_times)
     return $majority_date;
 }
 
-print_r(get_majority_date(get_split_timings("2022-03-02 10:00:00", "2022-03-03 22:00:00", get_dates_between("2022-03-02", "2022-03-03"))));
+function get_sec_to_time($second)
+{
+    $hour = intdiv($second, 3600);
+
+    $remaining_second = $second % 3600;
+
+    $minute = intdiv($remaining_second, 60);
+
+    $second = $remaining_second % 60;
+
+    return "$hour:$minute:$second";
+}
+
+function get_sec_to_hour($second)
+{
+    return intdiv($second, 3600);
+}
+
+function get_sec_to_minute($second)
+{
+    return intdiv($second, 60);
+}
+
+// print_r(get_majority_date("2023-06-9 10:00:00", "2023-06-10 01:00:00"));

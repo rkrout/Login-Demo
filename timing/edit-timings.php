@@ -1,51 +1,36 @@
 <?php 
 
-require("db.php");
+$timings = find_all("SELECT * FROM timings");
 
-$stmt = $pdo->prepare("SELECT * FROM timings");
-$stmt->execute();
-$timings = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$settings = find_one("SELECT * FROM settings LIMIT 1");
 
-$stmt = $pdo->prepare("SELECT * FROM settings LIMIT 1");
-$stmt->execute();
-$settings = $stmt->fetch(PDO::FETCH_ASSOC);
+foreach ($timings as $timing) 
+{
+    $office_time_in_sec = get_time_diff_in_sec($timing["punch_out_time"], $timing["punch_in_time"]);
 
-foreach ($timings as $timing) {
-    $working_time_in_second = strtotime($timing["punch_out_time"]) - strtotime($timing["punch_in_time"]);
+    $break_time_in_sec = intdiv($office_time_in_sec, $settings["break_interval"]) * $settings["break_time"];
 
-    $regular_time_in_second = $settings["regular_time"] * 3600;
+    $working_time_in_sec = $office_time_in_sec - $break_time_in_sec;
 
-    $total_break = intdiv($working_time_in_second, $settings["break_interval"] * 3600);
+    $over_time_in_sec = $working_time_in_sec > $settings["regular_time"] ? $working_time_in_sec - $settings["regular_time"] : 0;
 
-    $break_time_in_second = 60 * $settings["break_time"];
+    $double_time_in_sec = $working_time_in_sec > $settings["double_time"] ? $working_time_in_sec - $settings["double_time"] : 0;
 
-    $total_break_time_in_second = $total_break * $break_time_in_second;
+    $sql = "
+        UPDATE timings 
+        SET 
+            working_time = :working_time,
+            over_time = :over_time, 
+            break_time = :break_time, 
+            double_time = :double_time 
+        WHERE id = :id
+    ";
 
-    $total_break_time = $total_break_time_in_second / 60;
-
-    if($working_time_in_second > $regular_time_in_second) {
-        $over_time_in_second = $working_time_in_second - $regular_time_in_second;
-    
-        $over_time = ($over_time_in_second - $total_break_time_in_second) / 60;
-    } else {
-        $over_time = 0;
-    }
-
-    // calculating double time
-    $double_time_in_sec = $settings["double_time"] * 3600;
-
-    if($working_time_in_second > $double_time_in_sec) {
-        $over_time_in_second = $working_time_in_second - $double_time_in_sec;
-    
-        $double_time = $over_time_in_second / 60;
-    } else {
-        $double_time = 0;
-    }
-
-    $stmt = $pdo->prepare("UPDATE timings SET overtime = :overtime, total_break_time = :total_break_time, double_time = :double_time WHERE id = :id");
-    $stmt->bindParam("overtime", $over_time);
-    $stmt->bindValue("total_break_time", $total_break_time);
-    $stmt->bindParam("id", $timing["id"]);
-    $stmt->bindParam("double_time", $double_time);
-    $stmt->execute();
+    query($sql, [
+        "working_time" => $working_time_in_sec,
+        "over_time" => $over_time_in_sec,
+        "break_time" => $break_time_in_sec,
+        "double_time" => $double_time_in_sec,
+        "id" => $timing["id"]
+    ]);
 }

@@ -1,14 +1,14 @@
 <?php
 
-require("db.php");
+require_once("date-utils.php");
+require_once("db-utils.php");
 
-if(isset($_POST["punch_in_time"])) {
-    require("split-punching.php");
+if(isset($_POST["punch_in_time"])) 
+{
+    require_once("punching.php");
 }
 
-$stmt = $pdo->prepare("SELECT * FROM users");
-$stmt->execute();
-$users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$users = find_all("SELECT * FROM users");
 
 ?>
 
@@ -21,8 +21,7 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <div class="mb-6">
         <label for="user_id" class="mb-1 block">User</label>
-        <select name="user_id" id="user_id" class="border border-gray-300 rounded px-4 py-2 w-full focus:ring-orange-600
-        focus:ring-1 focus:border-orange-600 outline-none">
+        <select name="user_id" id="user_id" class="form-control">
             <?php foreach($users as $user): ?>
                 <option value="<?= $user["id"] ?>"><?= $user["name"] ?></option>
             <?php endforeach; ?>
@@ -31,18 +30,15 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <div class="mb-6">
         <label for="punch_in_time" class="mb-1 block">Punch In Time</label>
-        <input type="datetime-local" name="punch_in_time" id="punch_in_time" class="border border-gray-300 rounded px-4 py-2 w-full focus:ring-orange-600
-        focus:ring-1 focus:border-orange-600 outline-none">
+        <input type="datetime-local" name="punch_in_time" id="punch_in_time" class="form-control">
     </div>
 
     <div class="mb-6">
         <label for="punch_out_time" class="mb-1 block">Punch Out Time</label>
-        <input type="datetime-local" name="punch_out_time" id="punch_out_time" class="border border-gray-300 rounded px-4 py-2 w-full focus:ring-orange-600
-        focus:ring-1 focus:border-orange-600 outline-none">
+        <input type="datetime-local" name="punch_out_time" id="punch_out_time" class="form-control">
     </div>
 
-    <button class="px-4 py-2 rounded-md bg-orange-600 text-white hover:bg-orange-800 disabled:bg-orange-400 
-    focus:ring-1 focus:ring-orange-600 focus:ring-offset-1">Save</button>
+    <button class="btn btn-primary">Save</button>
 </form>
 
 <?php require("footer.php") ?>

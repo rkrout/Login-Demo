@@ -1,7 +1,11 @@
 <?php 
 
+require_once("db.php");
+
 function insert($table, $data)
 {
+    global $pdo;
+
     $sql = "INSERT INTO $table (";
 
     $index = 0;
@@ -40,32 +44,34 @@ function insert($table, $data)
         $index++;
     }
 
-    die($sql);
-
     $stmt = $pdo->prepare($sql);
 
     foreach ($data as $key => $value) 
     {
-        $stmt->bindParam($key, $value);
+        $stmt->bindValue($key, $value);
     }
 
     $stmt->execute();
 }
 
-function query($sql, $data)
+function query($sql, $data = [])
 {
+    global $pdo;
+
     $stmt = $pdo->prepare($sql);
 
     foreach ($data as $key => $value) 
     {
-        $stmt->bindParam($key, $value);
+        $stmt->bindValue($key, $value);
     }
 
     $stmt->execute();
 }
 
-function find_one($sql, $data)
+function find_one($sql, $data = [])
 {
+    global $pdo;
+
     $stmt = $pdo->prepare($sql);
 
     foreach ($data as $key => $value) 
@@ -77,11 +83,13 @@ function find_one($sql, $data)
 
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    return $result[0];
+    return $result;
 }
 
-function find_all($sql, $data)
+function find_all($sql, $data = [])
 {
+    global $pdo;
+
     $stmt = $pdo->prepare($sql);
 
     foreach ($data as $key => $value) 
