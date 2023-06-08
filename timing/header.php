@@ -85,7 +85,7 @@
         </div>
     </nav>
 
-    <div class="max-w-6xl my-5 mx-auto px-3">
+    <div class="max-w-8xl my-5 mx-auto px-3">
 
    
   

@@ -28,18 +28,18 @@ if(isset($_POST["punch_in_time"])) {
 <form method="post" class="border border-gray-300 rounded-md p-6 max-w-xl mx-auto my-8">
     <h2 class="font-bold text-center text-orange-600 text-2xl mb-6">EDIT TIMING</h2>
 
-    <input type="hidden" name="user_id" value="<?= $timing["user_id"] ?>">
+    <input type="hidden" name="group_id" value="<?= $timing["group_id"] ?>">
 
     <div class="mb-6">
         <label for="name" class="mb-1 block">Name</label>
         <input type="text" name="name" id="name" class="border border-gray-300 rounded px-4 py-2 w-full focus:ring-orange-600
-        focus:ring-1 focus:border-orange-600 outline-none disabled:bg-gray-200" disabled value="<?= $timing["user_name"] ?>">
+        focus:ring-1 focus:border-orange-600 outline-none disabled:bg-gray-200 cursor-not-allowed" disabled value="<?= $timing["user_name"] ?>">
     </div>
 
     <div class="mb-6">
         <label for="email" class="mb-1 block">Email</label>
         <input type="email" name="email" id="email" class="border border-gray-300 rounded px-4 py-2 w-full focus:ring-orange-600
-        focus:ring-1 focus:border-orange-600 outline-none disabled:bg-gray-200" disabled value="<?= $timing["user_email"] ?>">
+        focus:ring-1 focus:border-orange-600 outline-none disabled:bg-gray-200 cursor-not-allowed" disabled value="<?= $timing["user_email"] ?>">
     </div>
 
     <div class="mb-6">
