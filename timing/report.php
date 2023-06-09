@@ -156,7 +156,7 @@ $mpdf->WriteHTML("
             }
 
             .page {
-                border: 1px solid #4b5563; 
+                border: 1.5px solid #4b5563; 
                 padding: 12px;
                 height: 100%;
             }
