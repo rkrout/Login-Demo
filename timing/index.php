@@ -4,27 +4,23 @@ require("db-utils.php");
 require("date-utils.php");
 
 $sql = "
-SELECT 
-    users.name AS user_name, 
-    users.email AS user_email, 
-    timings.* 
-FROM timings 
-INNER JOIN users ON users.id = timings.user_id
+    SELECT 
+        users.name AS user_name, 
+        users.email AS user_email, 
+        timings.* 
+    FROM timings 
+    INNER JOIN users ON users.id = timings.user_id
 ";
+$data = [];
 
-if(isset($_GET["from_date"]) && isset($_GET["from_date"])) {
-    $sql .= " WHERE DATE(punch_in_time) >= :from_date AND DATE(punch_out_time) <= :to_date";
+if(isset($_GET["from_date"]) && isset($_GET["to_date"])) 
+{
+    $sql .= " WHERE DATE(date) >= :from_date AND DATE(date) <= :to_date";
+    $data["from_date"] = $_GET["from_date"];
+    $data["to_date"] = $_GET["to_date"];
 }
 
-$stmt = $pdo->prepare($sql);
-
-if(isset($_GET["from_date"]) && isset($_GET["from_date"])) {
-    $stmt->bindParam("from_date", $_GET["from_date"]);
-    $stmt->bindParam("to_date", $_GET["to_date"]);
-}
-
-$stmt->execute();
-$timings = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$timings = find_all($sql, $data);
 
 ?>
 
@@ -32,22 +28,19 @@ $timings = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <form class="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-2 mb-2">
     <div class="flex items-center gap-2">
-        From: <input type="date" name="from_date" id="from_date" class="border border-gray-300 rounded px-4 py-2 w-full focus:ring-orange-600
-        focus:ring-1 focus:border-orange-600 outline-none" style="max-width: 200px" value="<?= $_GET["from_date"] ?? "" ?>">
+        From: <input type="date" name="from_date" id="from_date" class="form-control max-w-[200px]" value="<?= $_GET["from_date"] ?? "" ?>">
 
-        To: <input type="date" name="to_date" id="to_date" class="border border-gray-300 rounded px-4 py-2 w-full focus:ring-orange-600
-        focus:ring-1 focus:border-orange-600 outline-none" style="max-width: 200px" value="<?= $_GET["to_date"] ?? "" ?>">
+        To: <input type="date" name="to_date" id="to_date" class="form-control max-w-[200px]"value="<?= $_GET["to_date"] ?? "" ?>">
     </div>
 
     <div class="flex items-center gap-2">
-        <button type="submit" class="px-4 py-2 rounded-md bg-purple-600 text-white hover:bg-purple-800 disabled:bg-purple-400 focus:ring-1 
-        focus:ring-purple-600 focus:ring-offset-1">Search</button>
+        <button type="submit" class="btn btn-purple">Search</button>
 
-        <button type="reset" type="submit" class="btn-reset px-4 py-2 rounded-md bg-gray-600 text-white hover:bg-gray-800 disabled:bg-gray-400 focus:ring-1 
-        focus:ring-gray-600 focus:ring-offset-1">clear</button>
+        <button type="reset" type="submit" class="btn-clear btn btn-gray">Clear</button>
 
-        <a href="/timing/create-timing.php" class="px-4 py-2 rounded-md bg-orange-600 text-white hover:bg-orange-800 disabled:bg-orange-400 
-        focus:ring-1 focus:ring-orange-600 focus:ring-offset-1">Create New</a>
+        <button type="button" class="btn-download btn btn-gray">Download Summary</button>
+
+        <a href="/timing/create-timing.php" class="btn btn-primary">Create New</a>
     </div>
 </form>
 
@@ -104,7 +97,7 @@ $timings = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <script>
     $(document).ready(function() {
-        $(".btn-reset").click(function(){
+        $(".btn-clear").click(function(){
             window.location.href = "/timing/index.php"
         })
 
@@ -119,6 +112,10 @@ $timings = $stmt->fetchAll(PDO::FETCH_ASSOC);
         if($("span .paginate_button").length == 1) {
             $("span .paginate_button").hide()
         } 
+
+        $(".btn-download").click(function(){
+            window.location.href = `/timing/report.php?from_date=${$("input[name=from_date]").val()}&&to_date=${$("input[name=to_date]").val()}`
+        })
     });
 </script>
 

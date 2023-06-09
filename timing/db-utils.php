@@ -94,7 +94,7 @@ function find_all($sql, $data = [])
 
     foreach ($data as $key => $value) 
     {
-        $stmt->bindParam($key, $value);
+        $stmt->bindValue($key, $value);
     }
 
     $stmt->execute();

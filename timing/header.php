@@ -77,7 +77,7 @@
 
             <ul class="flex gap-8 text-white">
                 <li>
-                    <a href="index.php" class="<?= in_array($file_name, ["index", "edit-timing"]) ? "text-white font-bold" : "text-gray-100" ?>">Home</a>
+                    <a href="index.php" class="<?= in_array($file_name, ["index", "edit-timing", "create-timing"]) ? "text-white font-bold" : "text-gray-100" ?>">Home</a>
                 </li>
                 <li>
                     <a href="/timing/settings.php" class="<?= in_array($file_name, ["settings", "edit-settings"]) ? "text-white font-bold" : "text-gray-100" ?>">Setting</a>

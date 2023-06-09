@@ -1,6 +1,6 @@
 <?php
 
-require("db-utils.php");
+require_once("db-utils.php");
 require_once("date-utils.php");
 
 if(isset($_POST["break_time"])) {

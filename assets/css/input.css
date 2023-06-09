@@ -5,7 +5,7 @@
 @layer components {
     .form-control {
         @apply border border-gray-300 rounded px-4 py-2 w-full focus:ring-orange-600 focus:ring-1 focus:border-orange-600 
-        outline-none;
+        outline-none disabled:bg-gray-200 disabled:cursor-not-allowed;
     }
 
     .table-responsive{
@@ -46,7 +46,11 @@
     }
 
     .btn-purple {
-        @apply bg-purple-600 text-white focus:ring-purple-600 hover:bg-purple-800k;
+        @apply bg-purple-600 text-white focus:ring-purple-600 hover:bg-purple-800;
+    }
+
+    .btn-gray {
+        @apply bg-gray-600 text-white focus:ring-gray-600 hover:bg-gray-800;
     }
 
     .btn-primary {
