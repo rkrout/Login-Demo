@@ -73,11 +73,7 @@ require_once "../vendor/autoload.php";
 
 $mpdf = new \Mpdf\Mpdf([
     "default_font_size" => 10,
-	// "default_font" => "times"
-	// "default_font" => "Serif"
-	// "default_font" => "frutiger"
-	// "default_font" => "Arial",
-	"default_font" => "Calibri",
+	"default_font" => "Calibri"
 ]);
 $mpdf->AddPageByArray([
     "margin-left" => 8,
@@ -217,8 +213,8 @@ $mpdf->WriteHTML("
                         <td>Double time</td>
                     </tr>
                 </thead>
-                <tbody>".
-                    get_table_rows()."
+                <tbody>
+                    ".get_table_rows()."
                     <tr>
                         <td style='padding-top:8px' colspan='6'></td>
                     </tr>
