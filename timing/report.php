@@ -73,8 +73,12 @@ $mpdf = new \Mpdf\Mpdf([
 	// "default_font" => "Arial",
 	"default_font" => "Calibri",
 ]);
-$mpdf->WriteCell(110, 5, 'Hello World');
-
+$mpdf->AddPageByArray([
+    'margin-left' => 8,
+    'margin-right' => 8,
+    'margin-top' => 8,
+    'margin-bottom' => 8,
+]);
 $mpdf->WriteHTML("
     <html>
     <head>
@@ -143,73 +147,82 @@ $mpdf->WriteHTML("
                 margin: 8px 0px;
             }
 
-            table th,
             table td {
-                padding: 8px 0px;
+                padding: 4px 0px;
             }
 
             thead td {
                 border-bottom: 1px dashed #4b5563;
             }
+
+            .page {
+                border: 1px solid #4b5563; 
+                padding: 12px;
+                height: 100%;
+            }
         </style>
     </head>
     <body>
-        <div class='header-1'>
-            <div class='header-1-left'>
-                <p>Bluesummit</p>
-                <p>Dt - 09/09/2033</p>
+        <div class='page'>
+            <div class='header-1'>
+                <div class='header-1-left'>
+                    <p>Bluesummit</p>
+                    <p>Dt - 09/09/2033</p>
+                </div>
+                <div class='header-1-middle'>
+                    <p>
+                        <b>BST TIMEKEEPER</b>
+                    </p>
+                    <p>Pay Period Report</p>
+                </div>
             </div>
-            <div class='header-1-middle'>
-                <p>Bst Timekeeper</p>
-                <p>PAY PERIOD REPORT</p>
-            </div>
-        </div>
 
-        <div class='header-2'>
-            <div class='header-2-left'>
-                <p>Frequency : Monthly</p>
-                <p>Dt Range : 03/02/2023 - 08/03/2023
+            <div class='header-2'>
+                <div class='header-2-left'>
+                    <p>Frequency : Monthly</p>
+                    <p>Dt Range : 03/02/2023 - 08/03/2023
+                </div>
+                <div class='header-2-middle'>
+                    <p>Emp Name : John Doe</p>
+                    <p>Badge No : 4567</p>
+                </div>
             </div>
-            <div class='header-2-middle'>
-                <p>Emp Name : John Doe</p>
-                <p>Badge No : 4567</p>
-            </div>
-        </div>
 
-        <table>
-            <thead>
-                <tr>
-                    <td width='15%'>Date</td>
-                    <td width='25%'>Regular working hrs</td>
-                    <td width='15%'>Actual worked</td>
-                    <td width='15%'>Break time</td>
-                    <td width='15%'>Over time</td>
-                    <td width='15%'>Double time</td>
-                </tr>
-            </thead>
-            <tbody>".
-                get_table_rows()
-            ."</tbody>
-        </table>
+            <table>
+                <thead>
+                    <tr>
+                        <td style='padding-bottom:8px;' width='15%'>Date</td>
+                        <td style='padding-bottom:8px;' width='25%'>Regular working hrs</td>
+                        <td style='padding-bottom:8px;' width='15%'>Actual worked</td>
+                        <td style='padding-bottom:8px;' width='15%'>Break time</td>
+                        <td style='padding-bottom:8px;' width='15%'>Over time</td>
+                        <td style='padding-bottom:8px;' width='15%'>Double time</td>
+                    </tr>
+                </thead>
+                <tbody>".
+                    get_table_rows()
+                ."</tbody>
+            </table>
 
-        <div class='summary-text'>
-            <div class='summary-text-heading'>SUMMARY</div>
+            <div class='summary-text'>
+                <div class='summary-text-heading'>SUMMARY</div>
 
-            <div class='summary-text-div'>
-                <div class='summary-text-left'>Total break time</div>
-                <div class='summary-text-right'>$total_break_time</div>
-            </div>
-            <div class='summary-text-div'>
-                <div class='summary-text-left'>Total over time</div>
-                <div class='summary-text-right'>$total_over_time</div>
-            </div>
-            <div class='summary-text-div'>
-                <div class='summary-text-left'>Total working time</div>
-                <div class='summary-text-right'>$total_working_time</div>
-            </div>
-            <div class='summary-text-div'>
-                <div class='summary-text-left'>Total double time</div>
-                <div class='summary-text-right'>$total_double_time</div>
+                <div class='summary-text-div'>
+                    <div class='summary-text-left'>Total break time</div>
+                    <div class='summary-text-right'>$total_break_time</div>
+                </div>
+                <div class='summary-text-div'>
+                    <div class='summary-text-left'>Total over time</div>
+                    <div class='summary-text-right'>$total_over_time</div>
+                </div>
+                <div class='summary-text-div'>
+                    <div class='summary-text-left'>Total working time</div>
+                    <div class='summary-text-right'>$total_working_time</div>
+                </div>
+                <div class='summary-text-div'>
+                    <div class='summary-text-left'>Total double time</div>
+                    <div class='summary-text-right'>$total_double_time</div>
+                </div>
             </div>
         </div>
     </body>
