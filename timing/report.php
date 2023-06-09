@@ -41,15 +41,19 @@ function get_table_rows()
 
     global $timings;
 
+    $index = 0;
+
     foreach($timings as $timing)
     {
         $table_rows .= "
             <tr>
                 <td>". date("m-d-Y", strtotime($timing['date'])) ."</td>
 
-                <td>". 8 ."</td>
+                <td>". get_day_from_date($timing['date']) ."</td>
 
                 <td>". get_sec_to_time($timing['working_time'], false) ."</td>
+
+                <td>". 8 ."</td>
 
                 <td>". get_sec_to_time($timing['break_time'], false) ."</td>
 
@@ -58,6 +62,8 @@ function get_table_rows()
                 <td>". get_sec_to_time($timing['double_time'], false) ."</td>
             </tr>
         ";
+
+        $index++;
     }
 
     return $table_rows;
@@ -74,11 +80,12 @@ $mpdf = new \Mpdf\Mpdf([
 	"default_font" => "Calibri",
 ]);
 $mpdf->AddPageByArray([
-    'margin-left' => 8,
-    'margin-right' => 8,
-    'margin-top' => 8,
-    'margin-bottom' => 8,
+    "margin-left" => 8,
+    "margin-right" => 8,
+    "margin-top" => 8,
+    "margin-bottom" => 16,
 ]);
+$mpdf->showImageErrors = true;
 $mpdf->WriteHTML("
     <html>
     <head>
@@ -145,20 +152,29 @@ $mpdf->WriteHTML("
             table{
                 width: 100%;
                 margin: 8px 0px;
+                border-collapse: collapse;
             }
 
-            table td {
-                padding: 4px 0px;
+            tbody td {
+                padding-top: 8px;
             }
 
             thead td {
                 border-bottom: 1px dashed #4b5563;
+                padding-bottom: 8px;
             }
 
             .page {
                 border: 1.5px solid #4b5563; 
                 padding: 12px;
                 height: 100%;
+                position: relative;
+            }
+
+            .logo {
+                height: 100%;
+                width: 100%;
+                object-fit: cover;
             }
         </style>
     </head>
@@ -191,41 +207,57 @@ $mpdf->WriteHTML("
             <table>
                 <thead>
                     <tr>
-                        <td style='padding-bottom:8px;' width='15%'>Date</td>
-                        <td style='padding-bottom:8px;' width='25%'>Regular working hrs</td>
-                        <td style='padding-bottom:8px;' width='15%'>Actual worked</td>
-                        <td style='padding-bottom:8px;' width='15%'>Break time</td>
-                        <td style='padding-bottom:8px;' width='15%'>Over time</td>
-                        <td style='padding-bottom:8px;' width='15%'>Double time</td>
+                        <td>Date</td>
+                        <td>Day</td>
+                        <td>Actual worked</td>
+                        <td>Regular hrs</td>
+                        <td>Break time</td>
+                        <td>Over time</td>
+                        <td>Double time</td>
                     </tr>
                 </thead>
                 <tbody>".
-                    get_table_rows()
-                ."</tbody>
+                    get_table_rows()."
+                    <tr>
+                        <td style='padding-top:8px' colspan='6'></td>
+                    </tr>
+                    <tr>
+                        <td style='border-top: 1px solid #4b5563; margin-top: 80px; text-align: center;' colspan='2'>Summary</td>
+                        <td style='border-top: 1px solid #4b5563; margin-top: 8px;'>4:00</td>
+                        <td style='border-top: 1px solid #4b5563; margin-top: 8px;'>5:00</td>
+                        <td style='border-top: 1px solid #4b5563; margin-top: 8px;'>6:00</td>
+                        <td style='border-top: 1px solid #4b5563; margin-top: 8px;'>4:00</td>
+                        <td style='border-top: 1px solid #4b5563; margin-top: 8px;'>7:00</td>
+                    </tr>
+                </tbody>
             </table>
+        </div>
 
-            <div class='summary-text'>
-                <div class='summary-text-heading'>SUMMARY</div>
-
-                <div class='summary-text-div'>
-                    <div class='summary-text-left'>Total break time</div>
-                    <div class='summary-text-right'>$total_break_time</div>
-                </div>
-                <div class='summary-text-div'>
-                    <div class='summary-text-left'>Total over time</div>
-                    <div class='summary-text-right'>$total_over_time</div>
-                </div>
-                <div class='summary-text-div'>
-                    <div class='summary-text-left'>Total working time</div>
-                    <div class='summary-text-right'>$total_working_time</div>
-                </div>
-                <div class='summary-text-div'>
-                    <div class='summary-text-left'>Total double time</div>
-                    <div class='summary-text-right'>$total_double_time</div>
-                </div>
-            </div>
+        <div style='position: absolute; bottom: 10px; right: 32px; height: 40px; width: 100px;'>
+            <img src='./logo-full.png' class='logo'>
         </div>
     </body>
     </html>
 ");
 $mpdf->Output();
+
+// <div class='summary-text'>
+// <div class='summary-text-heading'>SUMMARY</div>
+
+// <div class='summary-text-div'>
+//     <div class='summary-text-left'>Total break time</div>
+//     <div class='summary-text-right'>$total_break_time</div>
+// </div>
+// <div class='summary-text-div'>
+//     <div class='summary-text-left'>Total over time</div>
+//     <div class='summary-text-right'>$total_over_time</div>
+// </div>
+// <div class='summary-text-div'>
+//     <div class='summary-text-left'>Total working time</div>
+//     <div class='summary-text-right'>$total_working_time</div>
+// </div>
+// <div class='summary-text-div'>
+//     <div class='summary-text-left'>Total double time</div>
+//     <div class='summary-text-right'>$total_double_time</div>
+// </div>
+// </div>

@@ -122,4 +122,9 @@ function get_sec_to_minute($second)
     return intdiv($second, 60);
 }
 
+function get_day_from_date($date)
+{
+    return date("D", strtotime($date));
+}
+
 // print_r(get_majority_date("2023-06-9 10:00:00", "2023-06-10 01:00:00"));
