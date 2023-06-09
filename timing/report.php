@@ -30,10 +30,10 @@ foreach ($timings as $timing)
     $total_working_time += $timing["working_time"];
 }
 
-$total_break_time = get_sec_to_time($total_break_time);
-$total_over_time = get_sec_to_time($total_over_time);
-$total_double_time = get_sec_to_time($total_double_time);
-$total_working_time = get_sec_to_time($total_working_time);
+$total_break_time = get_sec_to_time($total_break_time, false);
+$total_over_time = get_sec_to_time($total_over_time, false);
+$total_double_time = get_sec_to_time($total_double_time, false);
+$total_working_time = get_sec_to_time($total_working_time, false);
 
 function get_table_rows()
 {
@@ -45,15 +45,17 @@ function get_table_rows()
     {
         $table_rows .= "
             <tr>
-                <td>". date('d-m-Y', strtotime($timing['date'])) ."</td>
+                <td>". date("m-d-Y", strtotime($timing['date'])) ."</td>
 
-                <td>". get_sec_to_time($timing['break_time']) ."</td>
+                <td>". 8 ."</td>
 
-                <td>". get_sec_to_time($timing['over_time']) ."</td>
+                <td>". get_sec_to_time($timing['working_time'], false) ."</td>
 
-                <td>". get_sec_to_time($timing['double_time']) ."</td>
+                <td>". get_sec_to_time($timing['break_time'], false) ."</td>
 
-                <td>". get_sec_to_time($timing['working_time']) ."</td>
+                <td>". get_sec_to_time($timing['over_time'], false) ."</td>
+
+                <td>". get_sec_to_time($timing['double_time'], false) ."</td>
             </tr>
         ";
     }
@@ -61,39 +63,29 @@ function get_table_rows()
     return $table_rows;
 }
 
-// require '../vendor/autoload.php';
-// use Dompdf\Dompdf;
-
-// // instantiate and use the dompdf class
-// $dompdf = new Dompdf();
-// $dompdf->loadHtml("<html><div style='display: flex; justify-content: space-between;'><p style='float: right; border-bottom: 1px dotted black'>hello</p> <p>dd</p></div></html>");
-
-// // (Optional) Setup the paper size and orientation
-// $dompdf->setPaper('A4', 'landscape');
-
-// // Render the HTML as PDF
-// $dompdf->render();
-
-// // Output the generated PDF to Browser
-// $dompdf->stream();
-
-
-
-
-
-
-
-
-
 require_once "../vendor/autoload.php";
 
-$mpdf = new \Mpdf\Mpdf();
+$mpdf = new \Mpdf\Mpdf([
+    "default_font_size" => 10,
+	// "default_font" => "times"
+	// "default_font" => "Serif"
+	// "default_font" => "frutiger"
+	// "default_font" => "Arial",
+	"default_font" => "Calibri",
+]);
+$mpdf->WriteCell(110, 5, 'Hello World');
+
 $mpdf->WriteHTML("
     <html>
     <head>
         <style>
+            p{
+                margin-bottom: 8px;
+                margin-top: 0px;
+            }
+
             .header-1{
-                border-bottom: 1px dashed black;
+                border-bottom: 1px dashed #4b5563;
             }
 
             .header-1-left{
@@ -108,7 +100,8 @@ $mpdf->WriteHTML("
             }
 
             .header-2{
-                border-bottom: 1px dashed black;
+                border-bottom: 1px dashed #4b5563;
+                margin-top: 8px;
             }
 
             .header-2-left{
@@ -126,13 +119,13 @@ $mpdf->WriteHTML("
             }
 
             .summary-text-heading {
-                border-bottom: 1px dashed black;
-                margin-bottom: 12px;
+                border-bottom: 1px dashed #4b5563;
+                margin-bottom: 8px;
                 padding-bottom: 8px;
             }
 
             .summary-text-div {
-                margin-bottom: 12px;
+                margin-bottom: 8px;
             }
 
             .summary-text-left {
@@ -147,17 +140,16 @@ $mpdf->WriteHTML("
 
             table{
                 width: 100%;
-                border-collapse: collapse;
-                margin: 20px 0px;
+                margin: 8px 0px;
             }
 
             table th,
             table td {
-                padding: 8px 4px;
+                padding: 8px 0px;
             }
 
             thead td {
-                border-bottom: 1px dashed black;
+                border-bottom: 1px dashed #4b5563;
             }
         </style>
     </head>
@@ -169,38 +161,40 @@ $mpdf->WriteHTML("
             </div>
             <div class='header-1-middle'>
                 <p>Bst Timekeeper</p>
-                <p>PAY PEROD REPORT</p>
+                <p>PAY PERIOD REPORT</p>
             </div>
         </div>
 
         <div class='header-2'>
             <div class='header-2-left'>
                 <p>Frequency : Monthly</p>
-                <p>Dt Range : 01/03/2022 - 07/08/2023
+                <p>Dt Range : 03/02/2023 - 08/03/2023
             </div>
             <div class='header-2-middle'>
-                <p>Emp No : 5677</p>
-                <p>Badge No : 5678/2023
+                <p>Emp Name : John Doe</p>
+                <p>Badge No : 4567</p>
             </div>
         </div>
 
         <table>
             <thead>
                 <tr>
-                    <td>Date</td>
-                    <td>Break Time</td>
-                    <td>Over Time</td>
-                    <td>Double Time</td>
-                    <td>Working Time</td>
+                    <td width='15%'>Date</td>
+                    <td width='25%'>Regular working hrs</td>
+                    <td width='15%'>Actual worked</td>
+                    <td width='15%'>Break time</td>
+                    <td width='15%'>Over time</td>
+                    <td width='15%'>Double time</td>
                 </tr>
             </thead>
             <tbody>".
                 get_table_rows()
             ."</tbody>
         </table>
-    
+
         <div class='summary-text'>
             <div class='summary-text-heading'>SUMMARY</div>
+
             <div class='summary-text-div'>
                 <div class='summary-text-left'>Total break time</div>
                 <div class='summary-text-right'>$total_break_time</div>

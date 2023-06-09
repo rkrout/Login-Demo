@@ -95,7 +95,7 @@ function get_majority_date($start_time, $end_time)
     return $majority_date;
 }
 
-function get_sec_to_time($second)
+function get_sec_to_time($second, $include_second = true)
 {
     $hour = intdiv($second, 3600);
 
@@ -105,7 +105,11 @@ function get_sec_to_time($second)
 
     $second = $remaining_second % 60;
 
-    return "$hour:$minute:$second";
+    $time = "$hour:$minute";
+
+    if($include_second) $time .= ":$second";
+
+    return $time;
 }
 
 function get_sec_to_hour($second)
