@@ -47,9 +47,9 @@ function get_table_rows()
     {
         $table_rows .= "
             <tr>
-                <td>". date("m-d-Y", strtotime($timing['date'])) ."</td>
+                <td style='text-align: left'>". date("m-d-Y", strtotime($timing['date'])) ."</td>
 
-                <td>". get_day_from_date($timing['date']) ."</td>
+                <td style='text-align: left'>". get_day_from_date($timing['date']) ."</td>
 
                 <td>". get_sec_to_time($timing['working_time'], false) ."</td>
 
@@ -153,6 +153,7 @@ $mpdf->WriteHTML("
                 width: 100%;
                 margin: 8px 0px;
                 border-collapse: collapse;
+                text-align: right;
             }
 
             tbody td {
@@ -207,8 +208,8 @@ $mpdf->WriteHTML("
             <table>
                 <thead>
                     <tr>
-                        <td>Date</td>
-                        <td>Day</td>
+                        <td style='text-align: left'>Date</td>
+                        <td style='text-align: left'>Day</td>
                         <td>Actual worked</td>
                         <td>Regular hrs</td>
                         <td>Break time</td>
@@ -222,7 +223,7 @@ $mpdf->WriteHTML("
                         <td style='padding-top:8px' colspan='6'></td>
                     </tr>
                     <tr>
-                        <td style='border-top: 1px solid #4b5563; margin-top: 80px; text-align: center;' colspan='2'>Summary</td>
+                        <td style='border-top: 1px solid #4b5563; margin-top: 80px; text-align: left;' colspan='2'>Summary</td>
                         <td style='border-top: 1px solid #4b5563; margin-top: 8px;'>4:00</td>
                         <td style='border-top: 1px solid #4b5563; margin-top: 8px;'>5:00</td>
                         <td style='border-top: 1px solid #4b5563; margin-top: 8px;'>6:00</td>
@@ -233,7 +234,7 @@ $mpdf->WriteHTML("
             </table>
         </div>
 
-        <div style='position: absolute; bottom: 10px; right: 32px; height: 40px; width: 100px;'>
+        <div style='position: absolute; bottom: 8px; right: 32px; height: 40px; width: 100px;'>
             <img src='./logo-full.png' class='logo'>
         </div>
     </body>
