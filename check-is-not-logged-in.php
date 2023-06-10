@@ -1,6 +1,6 @@
 <?php 
 
-if(isset($_SESSION["userId"])) {
-    header("Location: index.php");
-    die;
+if(isset($_SESSION["user_id"])) 
+{
+    die("<script>window.location.href='/login.php'</script>");
 }

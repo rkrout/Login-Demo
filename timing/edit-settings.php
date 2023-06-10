@@ -3,7 +3,8 @@
 require_once("db-utils.php");
 require_once("date-utils.php");
 
-if(isset($_POST["break_time"])) {
+if(isset($_POST["break_time"])) 
+{
     $sql = "
         UPDATE settings 
         SET 

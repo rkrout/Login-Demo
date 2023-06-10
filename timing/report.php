@@ -2,6 +2,7 @@
 
 require_once("db-utils.php");
 require_once("date-utils.php");
+require_once("../vendor/autoload.php");
 
 $sql = "
     SELECT 
@@ -16,6 +17,8 @@ $timings = find_all($sql, [
     "from_date" => $_GET["from_date"],
     "to_date" => $_GET["to_date"]
 ]);
+
+$settings = find_one("SELECT * FROM settings LIMIT 1");
 
 $total_break_time = 0;
 $total_over_time = 0;
@@ -39,7 +42,7 @@ function get_table_rows()
 {
     $table_rows = "";
 
-    global $timings;
+    global $timings, $settings;
 
     $index = 0;
 
@@ -53,7 +56,7 @@ function get_table_rows()
 
                 <td>". get_sec_to_time($timing['working_time'], false) ."</td>
 
-                <td>". 8 ."</td>
+                <td>". get_sec_to_time($settings["regular_time"], false) ."</td>
 
                 <td>". get_sec_to_time($timing['break_time'], false) ."</td>
 
@@ -69,19 +72,21 @@ function get_table_rows()
     return $table_rows;
 }
 
-require_once "../vendor/autoload.php";
-
 $mpdf = new \Mpdf\Mpdf([
     "default_font_size" => 10,
-	"default_font" => "Calibri"
+	"default_font" => "Calibri",
+    "debug" => true
 ]);
+
 $mpdf->AddPageByArray([
     "margin-left" => 8,
     "margin-right" => 8,
     "margin-top" => 8,
     "margin-bottom" => 16,
 ]);
+
 $mpdf->showImageErrors = true;
+
 $mpdf->WriteHTML("
     <html>
     <head>
@@ -220,11 +225,11 @@ $mpdf->WriteHTML("
                     </tr>
                     <tr>
                         <td style='border-top: 1px solid #4b5563; margin-top: 80px; text-align: left;' colspan='2'>Summary</td>
-                        <td style='border-top: 1px solid #4b5563; margin-top: 8px;'>4:00</td>
+                        <td style='border-top: 1px solid #4b5563; margin-top: 8px;'>$total_working_time</td>
                         <td style='border-top: 1px solid #4b5563; margin-top: 8px;'>5:00</td>
-                        <td style='border-top: 1px solid #4b5563; margin-top: 8px;'>6:00</td>
-                        <td style='border-top: 1px solid #4b5563; margin-top: 8px;'>4:00</td>
-                        <td style='border-top: 1px solid #4b5563; margin-top: 8px;'>7:00</td>
+                        <td style='border-top: 1px solid #4b5563; margin-top: 8px;'>$total_break_time</td>
+                        <td style='border-top: 1px solid #4b5563; margin-top: 8px;'>$total_over_time</td>
+                        <td style='border-top: 1px solid #4b5563; margin-top: 8px;'>$total_double_time</td>
                     </tr>
                 </tbody>
             </table>
@@ -236,25 +241,5 @@ $mpdf->WriteHTML("
     </body>
     </html>
 ");
+
 $mpdf->Output();
-
-// <div class='summary-text'>
-// <div class='summary-text-heading'>SUMMARY</div>
-
-// <div class='summary-text-div'>
-//     <div class='summary-text-left'>Total break time</div>
-//     <div class='summary-text-right'>$total_break_time</div>
-// </div>
-// <div class='summary-text-div'>
-//     <div class='summary-text-left'>Total over time</div>
-//     <div class='summary-text-right'>$total_over_time</div>
-// </div>
-// <div class='summary-text-div'>
-//     <div class='summary-text-left'>Total working time</div>
-//     <div class='summary-text-right'>$total_working_time</div>
-// </div>
-// <div class='summary-text-div'>
-//     <div class='summary-text-left'>Total double time</div>
-//     <div class='summary-text-right'>$total_double_time</div>
-// </div>
-// </div>

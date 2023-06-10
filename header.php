@@ -21,7 +21,6 @@
                 <li>
                     <a href="config.php">Config</a>
                 </li>
- 
             </ul>
         </div>
     </nav>

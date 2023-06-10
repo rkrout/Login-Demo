@@ -39,11 +39,6 @@ else if($setting["punch_type"] == "split_punch")
     {
         $split_times = get_split_times($punch_in_time, $punch_out_time);
 
-        // echo "<pre>";
-        // print_r($split_times);
-        // echo "</pre>";
-        // die;
-
         foreach ($split_times as $split_time) 
         {
             insert("timings", [
@@ -69,5 +64,3 @@ else
 require("edit-timings.php");
 
 die("<script>alert('Data added successfully'); window.location.href='/timing/index.php'</script>");
-
-?>
