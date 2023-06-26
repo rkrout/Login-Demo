@@ -18,7 +18,7 @@ foreach ($timings as $timing)
 
     $range = get_week_range($timing["punch_in_time"]);
 
-    if(strtotime($range["work_end_date"]) < strtotime($timing["punch_in_time"]))
+    if(strtotime($range["work_end_date"]) < strtotime(date("Y-m-d", strtotime($timing["punch_in_time"]))))
     {
         $double_time_in_sec = $working_time_in_sec;
     }
@@ -45,3 +45,4 @@ foreach ($timings as $timing)
         "id" => $timing["id"]
     ]);
 }
+
