@@ -32,6 +32,8 @@ function get_punch_type($punch_type)
             <th>Break Interval</th>
             <th>Punch Type</th>
             <th>Double Time</th>
+            <th>Consecutive Days</th>
+            <th>Week Start Day</th>
             <th>Action</th>
         </tr>
     </thead>
@@ -42,6 +44,8 @@ function get_punch_type($punch_type)
             <td><?= get_sec_to_hour($settings["break_interval"]) ?>hr</td>
             <td><?= get_punch_type($settings["punch_type"]) ?></td>
             <td><?= get_sec_to_hour($settings["double_time"]) ?>hr</td>
+            <td><?= $settings["consecutive_days"] ?></td>
+            <td><?= $settings["week_start_day"] ?></td>
             <td>
                 <a href="/timing/edit-settings.php" class="btn btn-sm btn-warning">Edit</a>
             </td>

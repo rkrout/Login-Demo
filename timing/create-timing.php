@@ -17,8 +17,6 @@ $users = find_all("SELECT * FROM users");
 <form method="post" class="border border-gray-300 rounded-md p-6 max-w-xl mx-auto my-8">
     <h2 class="font-bold text-center text-orange-600 text-2xl mb-6">INSERT TIMING</h2>
 
-    <input type="hidden" name="user_id" value="<?= $timing["user_id"] ?>">
-
     <div class="mb-6">
         <label for="user_id" class="mb-1 block">User</label>
         <select name="user_id" id="user_id" class="form-control">

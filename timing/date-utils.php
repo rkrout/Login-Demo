@@ -1,5 +1,7 @@
 <?php 
 
+require_once("db-utils.php");
+
 function is_greater($first_date, $second_date)
 {
     return strtotime($first_date) > strtotime($second_date);
@@ -127,31 +129,26 @@ function get_day_from_date($date)
     return date("D", strtotime($date));
 }
 
-function get_week_range($num) 
+function get_week_range($date) 
 {
-    $date = date("Y-m-d", strtotime("-$num week +1 day"));
-    
     $date = strtotime($date);
-    
+
     $week = [];
+
+    $settings = find_one("SELECT * FROM settings LIMIT 1");
     
-    if(date("l", $date) == "Monday")
+    if(date("l", $date) == $settings["week_start_day"])
     {
         $week["start_date"] = date("Y-m-d", $date);
     }
     else 
     {
-        $week["start_date"] = date("Y-m-d", strtotime("last monday", $date));
+        $week["start_date"] = date("Y-m-d", strtotime("last " . strtolower($settings["week_start_day"]), $date));
     }
     
-    if(date("l", $date) == "Sunday")
-    {
-        $week["end_date"] = date("Y-m-d", $date);
-    }
-    else 
-    {
-        $week["end_date"] = date("Y-m-d", strtotime("next sunday", $date));
-    }
+    $week["end_date"] = date("Y-m-d", strtotime("+6 days", strtotime($week["start_date"])));
+    
+    $week["work_end_date"] = date("Y-m-d", strtotime("+". $settings["consecutive_days"] - 1 ." days", strtotime($week["start_date"])));
     
     return $week;
 }
@@ -162,7 +159,7 @@ function get_pre_week_ranges($num)
     
     for($i = 0; $i < $num; $i++)
     {
-        array_push($ranges, get_week_range($i));
+        array_push($ranges, get_week_range(date("Y-m-d", strtotime("-$i week +1 day"))));
     }
     
     return $ranges;

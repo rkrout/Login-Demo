@@ -1,4 +1,6 @@
 <?php 
+require_once("db-utils.php");
+require_once("date-utils.php");
 
 $timings = find_all("SELECT * FROM timings");
 
@@ -14,7 +16,16 @@ foreach ($timings as $timing)
 
     $over_time_in_sec = $working_time_in_sec > $settings["regular_time"] ? $working_time_in_sec - $settings["regular_time"] : 0;
 
-    $double_time_in_sec = $working_time_in_sec > $settings["double_time"] ? $working_time_in_sec - $settings["double_time"] : 0;
+    $range = get_week_range($timing["punch_in_time"]);
+
+    if(strtotime($range["work_end_date"]) < strtotime($timing["punch_in_time"]))
+    {
+        $double_time_in_sec = $working_time_in_sec;
+    }
+    else 
+    {
+        $double_time_in_sec = $working_time_in_sec > $settings["double_time"] ? $working_time_in_sec - $settings["double_time"] : 0;
+    }
 
     $sql = "
         UPDATE timings 

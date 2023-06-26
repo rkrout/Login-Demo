@@ -29,7 +29,8 @@
         @apply border-t border-t-gray-300;
     }
 
-    .table tbody {
+    .table tbody,
+    .table tfoot {
         @apply text-center;
     }
 

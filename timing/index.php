@@ -30,6 +30,19 @@ else if(isset($_GET["range"]) && !empty($_GET["range"]))
 
 $timings = find_all($sql, $data);
 
+$total_break_time = 0;
+$total_over_time = 0;
+$total_double_time = 0;
+$total_working_time = 0;
+
+foreach ($timings as $timing) 
+{
+    $total_break_time += $timing["break_time"];
+    $total_over_time += $timing["over_time"];
+    $total_double_time += $timing["double_time"];
+    $total_working_time += $timing["working_time"];
+}
+
 $pre_week_ranges = get_pre_week_ranges(4);
 ?>
 
@@ -46,10 +59,9 @@ $pre_week_ranges = get_pre_week_ranges(4);
         <button class="btn btn-primary">Search</button>
     </form>
 
-    
     <form class="flex items-center gap-2 border border-gray-300 p-2">
         <select class="form-control" name="range">
-            <option></option>
+            <option value="">Select week</option>
             <?php foreach($pre_week_ranges as $ranges): ?>
                 <?php $value = $ranges["start_date"] . "@" . $ranges["end_date"] ?>
 
@@ -79,7 +91,7 @@ $pre_week_ranges = get_pre_week_ranges(4);
                 <th>Punch In</th>
                 <th>Punch Out</th>
                 <th>Break Time</th>
-                <th>Overtime</th>
+                <th>Over Time</th>
                 <th>Double Time</th>
                 <th>Working Time</th>
                 <th>Action</th>
@@ -112,6 +124,22 @@ $pre_week_ranges = get_pre_week_ranges(4);
                 </tr>
             <?php endforeach; ?>
         </tbody>
+        <?php if(count($timings) > 0): ?>
+            <tfoot>
+                <tr>
+                    <td>Total</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td><?= get_sec_to_time($total_break_time) ?></td>
+                    <td><?= get_sec_to_time($total_over_time) ?></td>
+                    <td><?= get_sec_to_time($total_double_time) ?></td>
+                    <td><?= get_sec_to_time($total_working_time) ?></td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        <?php endif; ?>
     </table>
 </div>
 
@@ -139,7 +167,22 @@ $pre_week_ranges = get_pre_week_ranges(4);
         } 
 
         $(".btn-download").click(function(){
-            window.location.href = `/timing/report.php?from_date=${$("input[name=from_date]").val()}&&to_date=${$("input[name=to_date]").val()}`
+            let from_date = $("input[name=from_date]").val()
+            let to_date = $("input[name=to_date]").val()
+            let range = $("select[name=range]").val()
+
+            if(from_date == "" && to_date == "" && range == "")
+            {
+                return alert("Please select data range or a week");
+            }
+
+            if(from_date == "" && to_date == "" && range)
+            {
+                from_date = range.split("@")[0]
+                to_date = range.split("@")[1]
+            }
+
+            window.location.href = `/timing/report.php?from_date=${from_date}&&to_date=${to_date}`
         })
     });
 </script>
