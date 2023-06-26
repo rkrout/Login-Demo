@@ -88,6 +88,7 @@ $pre_week_ranges = get_pre_week_ranges(4);
                 <th>Name</th>
                 <th>Email</th>
                 <th>Date</th>
+                <th>Day</th>
                 <th>Punch In</th>
                 <th>Punch Out</th>
                 <th>Break Time</th>
@@ -106,6 +107,8 @@ $pre_week_ranges = get_pre_week_ranges(4);
 
                     <td><?= date("d-m-Y", strtotime($timing["date"])) ?></td>
 
+                    <td><?= date("l", strtotime($timing["date"])) ?></td>
+                    
                     <td><?= date("d-m-Y h:i A", strtotime($timing["punch_in_time"])) ?></td>
 
                     <td><?= date("d-m-Y h:i A", strtotime($timing["punch_out_time"])) ?></td>
