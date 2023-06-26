@@ -1,10 +1,11 @@
 <?php
 
 require_once("auth-utils.php");
+require_once("../utils.")
 
 not_auth_or_redirect();
 
-if($_SERVER["REQUEST_METHOD"] == "POST")
+if(is_post())
 {
     if(login($_POST["email"], $_POST["password"]))
     {
@@ -12,7 +13,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST")
     }
     else 
     {
-        echo("<script>alert('Invalid email or password')</script>");
+        show_alert("Invalid email or password");
     }
 } 
 

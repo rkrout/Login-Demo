@@ -19,30 +19,55 @@ if(isset($_GET["from_date"]) && isset($_GET["to_date"]))
     $data["from_date"] = $_GET["from_date"];
     $data["to_date"] = $_GET["to_date"];
 }
+else if(isset($_GET["range"]) && !empty($_GET["range"]))
+{
+    $range = explode("@", $_GET["range"]);
+
+    $sql .= " WHERE DATE(date) >= :from_date AND DATE(date) <= :to_date";
+    $data["from_date"] = $range[0];
+    $data["to_date"] = $range[1];
+}
 
 $timings = find_all($sql, $data);
 
+$pre_week_ranges = get_pre_week_ranges(4);
 ?>
 
 <?php require("header.php") ?>
 
-<form class="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-2 mb-2">
+<div class="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-2 mb-2">
+    <form class="flex items-center gap-2 border border-gray-300 p-2">
+        <div class="flex items-center gap-2">
+            From: <input type="date" name="from_date" id="from_date" class="form-control max-w-[200px]" value="<?= $_GET["from_date"] ?? "" ?>">
+
+            To: <input type="date" name="to_date" id="to_date" class="form-control max-w-[200px]"value="<?= $_GET["to_date"] ?? "" ?>">
+        </div>
+
+        <button class="btn btn-primary">Search</button>
+    </form>
+
+    
+    <form class="flex items-center gap-2 border border-gray-300 p-2">
+        <select class="form-control" name="range">
+            <option></option>
+            <?php foreach($pre_week_ranges as $ranges): ?>
+                <?php $value = $ranges["start_date"] . "@" . $ranges["end_date"] ?>
+
+                <option <?= $value == (isset($_GET["range"]) ? $_GET["range"] : "") ? "selected" : "" ?> value="<?= $value ?>"><?= $ranges["start_date"] . " - " . $ranges["end_date"] ?></option>
+            <?php endforeach; ?>
+        </select>
+
+        <button class="btn btn-primary">Search</button>
+    </form>
+
     <div class="flex items-center gap-2">
-        From: <input type="date" name="from_date" id="from_date" class="form-control max-w-[200px]" value="<?= $_GET["from_date"] ?? "" ?>">
-
-        To: <input type="date" name="to_date" id="to_date" class="form-control max-w-[200px]"value="<?= $_GET["to_date"] ?? "" ?>">
-    </div>
-
-    <div class="flex items-center gap-2">
-        <button type="submit" class="btn btn-purple">Search</button>
-
         <button type="reset" type="submit" class="btn-clear btn btn-gray">Clear</button>
 
         <button type="button" class="btn-download btn btn-gray">Download Summary</button>
 
         <a href="/timing/create-timing.php" class="btn btn-primary">Create New</a>
     </div>
-</form>
+</div>
 
 <div class="table-responsive">
     <table class="table min-w-[1024px]" id="dataTable">

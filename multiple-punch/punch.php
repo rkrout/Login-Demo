@@ -5,21 +5,31 @@ if($_SERVER["REQUEST_METHOD"] == "POST")
     require_once("db-utils.php");
     require_once("session-utils.php");
 
-    $last_punch = find_one("SELECT * FROM timings WHERE user_id = ". get_session("user_id") ." AND DATE(date) = CURDATE() ORDER BY id DESC LIMIT 1");
+    $last_punch = find_one("SELECT * FROM timings WHERE user_id = ". get_session("user_id") ." AND date = '". date("Y-m-d", strtotime($_POST["date"])) ."' ORDER BY id DESC LIMIT 1");
 
     if($last_punch && $last_punch["is_punch_in"])
     {
+        if(strtotime($_POST["punch_out_time"]) > strtotime($last_punch["punch_in_time"]))
+        {
+            die("<script>alert('Punch out time must be bigger than punch in time'); window.location.href='/multiple-punch/index.php'</script>");
+        }
+
         query("UPDATE timings SET punch_out_time = :punch_out_time, is_punch_in = false WHERE id = " . $last_punch["id"], [
             "punch_out_time" => $_POST["time"]
         ]);
     }
     else 
     {
+        if($last_punch && strtotime($last_punch["punch_out_time"]) > strtotime($_POST["time"]))
+        {
+            die("<script>alert('Invalid punch in time'); window.location.href='/multiple-punch/index.php'</script>");
+        }
+
         insert("timings", [
             "user_id" => get_session("user_id"),
             "punch_in_time" => $_POST["time"],
             "is_punch_in" => true,
-            "date" => date("Y-m-d")
+            "date" => $_POST["date"]
         ]);
     }
 } 

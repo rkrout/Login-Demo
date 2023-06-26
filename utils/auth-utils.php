@@ -26,7 +26,7 @@ function auth_or_redirect()
 {
     if(!get_session("user_id"))
     {
-        die("<script>window.location.href='/multiple-punch/login.php'</script>");
+        die("<script>window.location.href='/auth/login.php'</script>");
     }
 }
 
