@@ -10,7 +10,6 @@ if(!(isset($config["host"]) && isset($config["name"]) && isset($config["username
 
 ?>
 
-
 <?php 
     $page_title = "Database Config";
     require("../header.php") 

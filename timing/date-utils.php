@@ -165,3 +165,67 @@ function get_pre_week_ranges($num)
     return $ranges;
 }
 
+function get_week_date_range($date)
+{
+    $day = date("d", strtotime($date));
+    
+    if($day >= 22)
+    {
+        return [
+            "22-" . date("m", strtotime($date)) . "-" . date("Y", strtotime($date)), 
+            
+            date("t-m-Y", strtotime($date))
+        ];
+    }
+    else if($day >= 15)
+    {
+        return [
+            "15-" . date("m", strtotime($date)) . "-" . date("Y", strtotime($date)), 
+            
+            "21-" . date("m", strtotime($date)) . "-" . date("Y", strtotime($date)),
+        ];
+    }
+    else if($day >= 8)
+    {
+        return [
+            "8-" . date("m", strtotime($date)) . "-" . date("Y", strtotime($date)), 
+            
+            "15-" . date("m", strtotime($date)) . "-" . date("Y", strtotime($date)),
+        ];
+    }
+    else if($day >= 1)
+    {
+        return [
+            "1-" . date("m", strtotime($date)) . "-" . date("Y", strtotime($date)), 
+            
+            "7-" . date("m", strtotime($date)) . "-" . date("Y", strtotime($date)),
+        ];
+    }
+}
+
+function get_weekly_sorted($dates) 
+{
+    $result = [];
+
+    for($i = 0; $i < count($dates); $i++)
+    {
+        if($dates[$i] == null) continue;
+        
+        $week_range = get_week_date_range($dates[$i]["date"]);
+        
+        array_push($result, []);
+        
+        for($j = 0; $j < count($dates); $j++)
+        {
+            if($dates[$j] == null) continue;
+            
+            if(strtotime($dates[$j]["date"]) >= strtotime($week_range[0]) && strtotime($dates[$j]["date"]) <= strtotime($week_range[1]))
+            {
+                array_push($result[count($result) - 1], $dates[$j]); 
+                $dates[$j] = null;
+            }
+        }
+    }
+    
+    return $result;
+}

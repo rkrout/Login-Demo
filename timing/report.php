@@ -82,10 +82,27 @@ $mpdf->AddPageByArray([
     "margin-left" => 8,
     "margin-right" => 8,
     "margin-top" => 8,
-    "margin-bottom" => 16,
+    "margin-bottom" => 16
 ]);
 
 $mpdf->showImageErrors = true;
+
+$mpdf->DefHTMLFooterByName("footer", "
+    <div style='border-top: 1px solid black;'>
+        <table>
+            <tr>
+                <td width='50%' style='text-align: right;'>
+                    {PAGENO}/{nbpg}
+                </td>
+                <td>
+                    <img src='./logo-full.png' style='height: 30px; object-fit: cover;'>
+                </td>
+            </tr>
+        </table>
+    </div>
+");
+
+$mpdf->setHtmlFooterByName("footer");
 
 $mpdf->WriteHTML("
     <html>
@@ -165,79 +182,61 @@ $mpdf->WriteHTML("
                 border-bottom: 1px dashed #4b5563;
                 padding-bottom: 8px;
             }
-
-            .page {
-                border: 1.5px solid #4b5563; 
-                padding: 12px;
-                height: 100%;
-                position: relative;
-            }
-
-            .logo {
-                height: 100%;
-                width: 100%;
-                object-fit: cover;
-            }
         </style>
     </head>
     <body>
-        <div class='page'>
-            <div class='header-1'>
-                <div class='header-1-left'>
-                    <p>Bluesummit</p>
-                    <p>Dt - 09/09/2033</p>
-                </div>
-                <div class='header-1-middle'>
-                    <p>
-                        <b>BST TIMEKEEPER</b>
-                    </p>
-                    <p>Pay Period Report</p>
-                </div>
+        <div class='header-1'>
+            <div class='header-1-left'>
+                <p>Bluesummit</p>
+                <p>Dt - 09/09/2033</p>
             </div>
-
-            <div class='header-2'>
-                <div class='header-2-left'>
-                    <p>Frequency : Monthly</p>
-                    <p>Dt Range : 03/02/2023 - 08/03/2023
-                </div>
-                <div class='header-2-middle'>
-                    <p>Emp Name : John Doe</p>
-                    <p>Badge No : 4567</p>
-                </div>
+            <div class='header-1-middle'>
+                <p>
+                    <b>BST TIMEKEEPER</b>
+                </p>
+                <p>Pay Period Report</p>
             </div>
-
-            <table>
-                <thead>
-                    <tr>
-                        <td style='text-align: left'>Date</td>
-                        <td style='text-align: left'>Day</td>
-                        <td>Actual worked</td>
-                        <td>Regular hrs</td>
-                        <td>Break time</td>
-                        <td>Over time</td>
-                        <td>Double time</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    ".get_table_rows()."
-                    <tr>
-                        <td style='padding-top:8px' colspan='6'></td>
-                    </tr>
-                    <tr>
-                        <td style='border-top: 1px solid #4b5563; margin-top: 80px; text-align: left;' colspan='2'>Summary</td>
-                        <td style='border-top: 1px solid #4b5563; margin-top: 8px;'>$total_working_time</td>
-                        <td style='border-top: 1px solid #4b5563; margin-top: 8px;'>5:00</td>
-                        <td style='border-top: 1px solid #4b5563; margin-top: 8px;'>$total_break_time</td>
-                        <td style='border-top: 1px solid #4b5563; margin-top: 8px;'>$total_over_time</td>
-                        <td style='border-top: 1px solid #4b5563; margin-top: 8px;'>$total_double_time</td>
-                    </tr>
-                </tbody>
-            </table>
         </div>
 
-        <div style='position: absolute; bottom: 8px; right: 32px; height: 40px; width: 100px;'>
-            <img src='./logo-full.png' class='logo'>
+        <div class='header-2'>
+            <div class='header-2-left'>
+                <p>Frequency : Monthly</p>
+                <p>Dt Range : 03/02/2023 - 08/03/2023
+            </div>
+            <div class='header-2-middle'>
+                <p>Emp Name : John Doe</p>
+                <p>Badge No : 4567</p>
+            </div>
         </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <td style='text-align: left'>Date</td>
+                    <td style='text-align: left'>Day</td>
+                    <td>Actual worked</td>
+                    <td>Regular hrs</td>
+                    <td>Break time</td>
+                    <td>Over time</td>
+                    <td>Double time</td>
+                </tr>
+            </thead>
+            <tbody>
+                ".get_table_rows()."
+                ".get_table_rows()."
+                <tr>
+                    <td style='padding-top:8px' colspan='6'></td>
+                </tr>
+                <tr>
+                    <td style='border-top: 1px solid #4b5563; margin-top: 80px; text-align: left;' colspan='2'>Summary</td>
+                    <td style='border-top: 1px solid #4b5563; margin-top: 8px;'>$total_working_time</td>
+                    <td style='border-top: 1px solid #4b5563; margin-top: 8px;'>5:00</td>
+                    <td style='border-top: 1px solid #4b5563; margin-top: 8px;'>$total_break_time</td>
+                    <td style='border-top: 1px solid #4b5563; margin-top: 8px;'>$total_over_time</td>
+                    <td style='border-top: 1px solid #4b5563; margin-top: 8px;'>$total_double_time</td>
+                </tr>
+            </tbody>
+        </table>
     </body>
     </html>
 ");

@@ -14,7 +14,13 @@ if(isset($_POST["break_time"]))
             punch_type = :punch_type,
             double_time = :double_time,
             consecutive_days = :consecutive_days,
-            week_start_day = :week_start_day
+            week_start_day = :week_start_day,
+            in_time = :in_time,
+            out_time = :out_time,
+            launch_break_start = :launch_break_start,
+            launch_break_end = :launch_break_end,
+            over_time_cal = :over_time_cal,
+            weekly_over_time = :weekly_over_time
     ";
 
     query($sql, [
@@ -24,10 +30,16 @@ if(isset($_POST["break_time"]))
         "punch_type" => $_POST["punch_type"],
         "double_time" => $_POST["double_time"] * 3600,
         "consecutive_days" => $_POST["consecutive_days"],
-        "week_start_day" => $_POST["week_start_day"]
+        "week_start_day" => $_POST["week_start_day"],
+        "in_time" => $_POST["in_time"],
+        "out_time" => $_POST["out_time"],
+        "launch_break_start" => $_POST["launch_break_start"],
+        "launch_break_end" => $_POST["launch_break_end"],
+        "over_time_cal" => $_POST["over_time_cal"],
+        "weekly_over_time" => $_POST["weekly_over_time"] * 3600
     ]);
 
-    die("<script>alert('Setting updated successfully'); window.location.href='/timing/settings.php'</script>");
+    die("<script>window.location.href='/timing/settings.php'</script>");
 }
 
 $settings = find_one("SELECT * FROM settings LIMIT 1");
@@ -84,6 +96,43 @@ $settings = find_one("SELECT * FROM settings LIMIT 1");
             <option <?= $settings["week_start_day"] == "Saturday" ? "selected" : "" ?>>Saturday</option>
             <option <?= $settings["week_start_day"] == "Sunday" ? "selected" : "" ?>>Sunday</option>
         </select>
+    </div>
+
+    <div class="mb-6">
+        <label for="in_time" class="mb-1 block">In Time</label>
+        <input type="time" name="in_time" id="in_time" class="form-control" value="<?= $settings["in_time"] ?>">
+    </div>
+
+    <div class="mb-6">
+        <label for="out_time" class="mb-1 block">Out Time</label>
+        <input type="time" name="out_time" id="out_time" class="form-control" value="<?= $settings["out_time"] ?>">
+    </div>
+
+    <div class="mb-6">
+        <label for="launch_break_start" class="mb-1 block">Launch Time Start</label>
+        <input type="time" name="launch_break_start" id="launch_break_start" class="form-control" value="<?= $settings["launch_break_start"] ?>">
+    </div>
+
+    <div class="mb-6">
+        <label for="launch_break_end" class="mb-1 block">Launch Time End</label>
+        <input type="time" name="launch_break_end" id="launch_break_end" class="form-control" value="<?= $settings["launch_break_end"] ?>">
+    </div>
+
+    <div class="mb-6">
+        <label for="over_time_cal" class="mb-1 block">Calculate over time</label>
+        <div class="flex gap-2 cursor-pointer">
+            <input type="radio" class="h-4 w-4" <?= $settings["over_time_cal"] == "daily" ? "checked" : "" ?> name="over_time_cal" id="daily" value="daily">
+            <label for="daily">Daily</label>
+        </div>
+        <div class="flex gap-2 cursor-pointer">
+            <input type="radio" class="h-4 w-4" <?= $settings["over_time_cal"] == "weekly" ? "checked" : "" ?> name="over_time_cal" id="weekly" value="weekly">
+            <label for="weekly">Weekly</label>
+        </div>
+    </div>
+
+    <div class="mb-6">
+        <label for="weekly_over_time" class="mb-1 block">Weekly over time (In hour)</label>
+        <input type="number" name="weekly_over_time" id="weekly_over_time" class="form-control" value="<?= get_sec_to_hour($settings["weekly_over_time"]) ?>">
     </div>
 
     <button class="btn btn-primary">Update</button>

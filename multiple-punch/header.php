@@ -1,7 +1,5 @@
 <?php $file_name = explode(".", basename($_SERVER["PHP_SELF"]))[0]; ?>
 
-<?php require_once("../auth-utils.php") ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -22,22 +20,23 @@
 </head>
 
 <body>
-    <?php if(is_authenticated()): ?>
-        <nav class="bg-orange-600 h-16 shadow-lg">
-            <div class="max-w-5xl mx-auto h-full flex items-center justify-between">
-                <a href="/multiple-punch/index.php" class="text-2xl text-white font-bold">Multiple Punch</a>
+    <nav class="bg-orange-600 h-16 shadow-lg">
+        <div class="max-w-5xl mx-auto h-full flex items-center justify-between">
+            <a href="/multiple-punch/index.php" class="text-2xl text-white font-bold">Multiple Punch</a>
 
-                <ul class="flex gap-8 text-white">
-                    <li>
-                        <a href="/multiple-punch/index.php" class="<?= in_array($file_name, ["index"]) ? "text-white font-bold" : "text-gray-100" ?>">Home</a>
-                    </li>
-                    <li>
-                        <a href="/multiple-punch/punch.php" class="<?= in_array($file_name, ["punch"]) ? "text-white font-bold" : "text-gray-100" ?>">Punch</a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-    <?php endif; ?>
+            <ul class="flex gap-8 text-white">
+                <li>
+                    <a href="/multiple-punch/index.php" class="<?= in_array($file_name, ["index"]) ? "text-white font-bold" : "text-gray-100" ?>">Home</a>
+                </li>
+                <li>
+                    <a href="/multiple-punch/punch.php" class="<?= in_array($file_name, ["punch"]) ? "text-white font-bold" : "text-gray-100" ?>">Punch</a>
+                </li>
+                <li>
+                    <a href="/multiple-punch/settings.php" class="<?= in_array($file_name, ["settings", "edit-settings"]) ? "text-white font-bold" : "text-gray-100" ?>">Settings</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
 
     <div class="max-w-8xl my-5 mx-auto px-3">
 

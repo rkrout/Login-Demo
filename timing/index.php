@@ -10,6 +10,7 @@ $sql = "
         timings.* 
     FROM timings 
     INNER JOIN users ON users.id = timings.user_id
+    ORDER BY timings.date DESC
 ";
 $data = [];
 
@@ -44,6 +45,41 @@ foreach ($timings as $timing)
 }
 
 $pre_week_ranges = get_pre_week_ranges(4);
+
+$settings = find_one("SELECT * FROM settings");
+
+if($settings["over_time_cal"] == "weekly")
+{
+    $dates = get_weekly_sorted($timings);
+
+    for($i = 0; $i < count($dates); $i++)
+    {
+        $total_working_time = 0;
+
+        for($j = 0; $j < count($dates[$i]); $j++)
+        {
+            $total_working_time += $dates[$i][$j]["working_time"];
+        }
+
+        if($total_working_time > $settings["weekly_over_time"])
+        {
+            $dates[$i][0]["total_over_time"] = $total_working_time - $settings["weekly_over_time"];
+        }
+        else 
+        {
+            $dates[$i][0]["total_over_time"] = 0;
+        }
+
+        $dates[$i][0]["total_elements"] = count($dates[$i]);
+    }
+
+    $timings = array_merge(...$dates);
+}
+
+// echo "<pre>";
+// print_r(array_merge(...$dates));
+// echo "</pre>";
+
 ?>
 
 <?php require("header.php") ?>
@@ -115,7 +151,13 @@ $pre_week_ranges = get_pre_week_ranges(4);
 
                     <td><?= get_sec_to_time($timing["break_time"]) ?></td>
 
-                    <td><?= get_sec_to_time($timing["over_time"]) ?></td>
+                    <?php if($settings["over_time_cal"] == "weekly"): ?>
+                        <?php if(isset($timing["total_over_time"])): ?>
+                            <td style="border: 1px solid #ccc;" rowspan="<?= $timing["total_elements"] ?>"><?= get_sec_to_time($timing["total_over_time"]) ?></td>
+                        <?php endif; ?>
+                    <?php else: ?>
+                        <td><?= get_sec_to_time($timing["over_time"]) ?></td>
+                    <?php endif; ?>
 
                     <td><?= get_sec_to_time($timing["double_time"]) ?></td>
 
@@ -135,8 +177,13 @@ $pre_week_ranges = get_pre_week_ranges(4);
                     <td></td>
                     <td></td>
                     <td></td>
+                    <td></td>
                     <td><?= get_sec_to_time($total_break_time) ?></td>
-                    <td><?= get_sec_to_time($total_over_time) ?></td>
+                    <?php if($settings["over_time_cal"] == "weekly"): ?>
+                        <td></td>
+                    <?php else: ?>
+                        <td><?= get_sec_to_time($total_over_time) ?></td>
+                    <?php endif; ?>
                     <td><?= get_sec_to_time($total_double_time) ?></td>
                     <td><?= get_sec_to_time($total_working_time) ?></td>
                     <td></td>
