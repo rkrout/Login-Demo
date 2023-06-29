@@ -1,8 +1,5 @@
 {
   "devDependencies": {
     "tailwindcss": "^3.3.2"
-  },
-  "dependencies": {
-    "ngrok": "^5.0.0-beta.2"
   }
 }

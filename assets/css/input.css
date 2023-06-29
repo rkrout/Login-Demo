@@ -8,12 +8,20 @@
         outline-none disabled:bg-gray-200 disabled:cursor-not-allowed;
     }
 
+    .form-check {
+        @apply flex items-center gap-2;
+    }
+
+    .form-check-inpug {
+        @apply h-8 w-8;
+    }
+
     .table-responsive{
         @apply overflow-auto;
     }
 
     .table {
-        @apply w-full border border-gray-300 rounded mx-auto mb-5;
+        @apply w-full border border-gray-300 border-r-0 rounded mx-auto mb-5 text-center;
     }
 
     .table thead {
@@ -22,16 +30,11 @@
 
     .table th,
     .table td{
-        @apply py-3 px-2;
+        @apply px-4 py-3 border-r border-gray-300;
     }
 
     .table tr {
         @apply border-t border-t-gray-300;
-    }
-
-    .table tbody,
-    .table tfoot {
-        @apply text-center;
     }
 
     .btn {

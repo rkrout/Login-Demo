@@ -20,7 +20,9 @@ if(isset($_POST["break_time"]))
             launch_break_start = :launch_break_start,
             launch_break_end = :launch_break_end,
             over_time_cal = :over_time_cal,
-            weekly_over_time = :weekly_over_time
+            weekly_over_time = :weekly_over_time,
+            double_time_cal = :double_time_cal,
+            weekly_double_time = :weekly_double_time
     ";
 
     query($sql, [
@@ -36,7 +38,9 @@ if(isset($_POST["break_time"]))
         "launch_break_start" => $_POST["launch_break_start"],
         "launch_break_end" => $_POST["launch_break_end"],
         "over_time_cal" => $_POST["over_time_cal"],
-        "weekly_over_time" => $_POST["weekly_over_time"] * 3600
+        "weekly_over_time" => $_POST["weekly_over_time"] * 3600,
+        "double_time_cal" => $_POST["double_time_cal"],
+        "weekly_double_time" => $_POST["weekly_double_time"] * 3600
     ]);
 
     die("<script>window.location.href='/timing/settings.php'</script>");
@@ -120,19 +124,40 @@ $settings = find_one("SELECT * FROM settings LIMIT 1");
 
     <div class="mb-6">
         <label for="over_time_cal" class="mb-1 block">Calculate over time</label>
+
         <div class="flex gap-2 cursor-pointer">
-            <input type="radio" class="h-4 w-4" <?= $settings["over_time_cal"] == "daily" ? "checked" : "" ?> name="over_time_cal" id="daily" value="daily">
-            <label for="daily">Daily</label>
+            <input type="radio" class="h-4 w-4" <?= $settings["over_time_cal"] == "daily" ? "checked" : "" ?> name="over_time_cal" id="over_time_daily" value="daily">
+            <label for="over_time_daily">Daily</label>
         </div>
+        
         <div class="flex gap-2 cursor-pointer">
-            <input type="radio" class="h-4 w-4" <?= $settings["over_time_cal"] == "weekly" ? "checked" : "" ?> name="over_time_cal" id="weekly" value="weekly">
-            <label for="weekly">Weekly</label>
+            <input type="radio" class="h-4 w-4" <?= $settings["over_time_cal"] == "weekly" ? "checked" : "" ?> name="over_time_cal" id="over_time_weekly" value="weekly">
+            <label for="over_time_weekly">Weekly</label>
         </div>
     </div>
 
     <div class="mb-6">
         <label for="weekly_over_time" class="mb-1 block">Weekly over time (In hour)</label>
         <input type="number" name="weekly_over_time" id="weekly_over_time" class="form-control" value="<?= get_sec_to_hour($settings["weekly_over_time"]) ?>">
+    </div>
+
+    <div class="mb-6">
+        <label for="double_time_cal" class="mb-1 block">Calculate double time</label>
+
+        <div class="form-check">
+            <input type="radio" class="form-check-input" <?= $settings["double_time_cal"] == "daily" ? "checked" : "" ?> name="double_time_cal" id="double_time_daily" value="daily">
+            <label for="double_time_daily">Daily</label>
+        </div>
+
+        <div class="form-check mt-1">
+            <input type="radio" class="form-check-input" <?= $settings["double_time_cal"] == "weekly" ? "checked" : "" ?> name="double_time_cal" id="double_time_weekly" value="weekly">
+            <label for="double_time_weekly">Weekly</label>
+        </div>
+    </div>
+
+    <div class="mb-6">
+        <label for="weekly_double_time" class="mb-1 block">Weekly double time (In hour)</label>
+        <input type="number" name="weekly_double_time" id="weekly_double_time" class="form-control" value="<?= get_sec_to_hour($settings["weekly_double_time"]) ?>">
     </div>
 
     <button class="btn btn-primary">Update</button>

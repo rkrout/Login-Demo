@@ -211,7 +211,7 @@ function get_weekly_sorted($dates)
     {
         if($dates[$i] == null) continue;
         
-        $week_range = get_week_date_range($dates[$i]["date"]);
+        $week_range = get_week_range($dates[$i]["date"]);
         
         array_push($result, []);
         
@@ -219,9 +219,10 @@ function get_weekly_sorted($dates)
         {
             if($dates[$j] == null) continue;
             
-            if(strtotime($dates[$j]["date"]) >= strtotime($week_range[0]) && strtotime($dates[$j]["date"]) <= strtotime($week_range[1]))
+            if(strtotime($dates[$j]["date"]) >= strtotime($week_range["start_date"]) && strtotime($dates[$j]["date"]) <= strtotime($week_range["end_date"]))
             {
                 array_push($result[count($result) - 1], $dates[$j]); 
+
                 $dates[$j] = null;
             }
         }

@@ -24,44 +24,66 @@ function get_punch_type($punch_type)
 
 <?php require("header.php") ?>
 
-<div class="overflow-auto">
-    <table class="table mt-4" style="min-width: 1600px;">
-        <thead>
-            <tr>
-                <th>Regular Time</th>
-                <th>Break Time</th>
-                <th>Break Interval</th>
-                <th>Punch Type</th>
-                <th>Double Time</th>
-                <th>Consecutive Days</th>
-                <th>Week Start Day</th>
-                <th>In Time</th>
-                <th>Out Time</th>
-                <th>Launch Break</th>
-                <th>Calculate Over Time</th>
-                <th>Weekly Overtime</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td><?= get_sec_to_hour($settings["regular_time"]) ?>hr</td>
-                <td><?= get_sec_to_minute($settings["break_time"]) ?>min</td>
-                <td><?= get_sec_to_hour($settings["break_interval"]) ?>hr</td>
-                <td><?= get_punch_type($settings["punch_type"]) ?></td>
-                <td><?= get_sec_to_hour($settings["double_time"]) ?>hr</td>
-                <td><?= $settings["consecutive_days"] ?></td>
-                <td><?= $settings["week_start_day"] ?></td>
-                <td><?= date("h:i A", strtotime($settings["in_time"])) ?></td>
-                <td><?= date("h:i A", strtotime($settings["out_time"])) ?></td>
-                <td><?= date("h:i A", strtotime($settings["launch_break_start"])) . " - " . date("h:i A", strtotime($settings["launch_break_end"])) ?></td>
-                <td><?= $settings["over_time_cal"] ?></td>
-                <td><?= get_sec_to_hour($settings["weekly_over_time"]) ?>hr</td>
-                <td>
-                    <a href="/timing/edit-settings.php" class="btn btn-sm btn-warning">Edit</a>
-                </td>
-            </tr>
-        </tbody>
+<div class="max-w-xl mx-auto">
+    <a href="/timing/edit-settings.php" class="btn btn-primary">Edit Settings</a>
+
+    <table class="table mt-4 text-left">
+        <tr>
+            <td>Regular Time</td>
+            <td><?= get_sec_to_hour($settings["regular_time"]) ?>hr</td>
+        </tr>
+        <tr>
+            <td>Break Time</td>
+            <td><?= get_sec_to_minute($settings["break_time"]) ?>min</td>
+        </tr>
+        <tr>
+            <td>Break Interval</td>
+            <td><?= get_sec_to_hour($settings["break_interval"]) ?>hr</td>
+        </tr>
+        <tr>
+            <td>Punch Type</td>
+            <td><?= get_punch_type($settings["punch_type"]) ?></td>
+        </tr>
+        <tr>
+            <td>Double Time</td>
+            <td><?= get_sec_to_hour($settings["double_time"]) ?>hr</td>
+        </tr>
+        <tr>
+            <td>Consecutive Days</td>
+            <td><?= $settings["consecutive_days"] ?></td>
+        </tr>
+        <tr>
+            <td>Week Start Day</td>
+            <td><?= $settings["week_start_day"] ?></td>
+        </tr>
+        <tr>
+            <td>In Time</td>
+            <td><?= date("h:i A", strtotime($settings["in_time"])) ?></td>
+        </tr>
+        <tr>
+            <td>Out Time</td>
+            <td><?= date("h:i A", strtotime($settings["out_time"])) ?></td>
+        </tr>
+        <tr>
+            <td>Launch Break</td>
+            <td><?= date("h:i A", strtotime($settings["launch_break_start"])) . " - " . date("h:i A", strtotime($settings["launch_break_end"])) ?></td>
+        </tr>
+        <tr>
+            <td>Calculate Over Time</td>
+            <td><?= $settings["over_time_cal"] ?></td>
+        </tr>
+        <tr>
+            <td>Weekly Over Time</td>
+            <td><?= get_sec_to_hour($settings["weekly_over_time"]) ?>hr</td>
+        </tr>
+        <tr>
+            <td>Calculate Double Time</td>
+            <td><?= $settings["double_time_cal"] ?></td>
+        </tr>
+        <tr>
+            <td>Weekly Double Time</td>
+            <td><?= get_sec_to_hour($settings["weekly_double_time"]) ?>hr</td>
+        </tr>
     </table>
 </div>
 

@@ -3,81 +3,177 @@
 require("db-utils.php");
 require("date-utils.php");
 
-$sql = "
-    SELECT 
-        users.name AS user_name, 
-        users.email AS user_email, 
-        timings.* 
-    FROM timings 
-    INNER JOIN users ON users.id = timings.user_id
-    ORDER BY timings.date DESC
-";
-$data = [];
-
-if(isset($_GET["from_date"]) && isset($_GET["to_date"])) 
+function set_summary(&$summary, $timings, $settings) 
 {
-    $sql .= " WHERE DATE(date) >= :from_date AND DATE(date) <= :to_date";
-    $data["from_date"] = $_GET["from_date"];
-    $data["to_date"] = $_GET["to_date"];
-}
-else if(isset($_GET["range"]) && !empty($_GET["range"]))
-{
-    $range = explode("@", $_GET["range"]);
+    $summary = [
+        "total_break_time" => 0,
+        "total_working_time" => 0,
+        "total_over_time" => 0,
+        "total_double_time" => 0
+    ];
 
-    $sql .= " WHERE DATE(date) >= :from_date AND DATE(date) <= :to_date";
-    $data["from_date"] = $range[0];
-    $data["to_date"] = $range[1];
-}
-
-$timings = find_all($sql, $data);
-
-$total_break_time = 0;
-$total_over_time = 0;
-$total_double_time = 0;
-$total_working_time = 0;
-
-foreach ($timings as $timing) 
-{
-    $total_break_time += $timing["break_time"];
-    $total_over_time += $timing["over_time"];
-    $total_double_time += $timing["double_time"];
-    $total_working_time += $timing["working_time"];
-}
-
-$pre_week_ranges = get_pre_week_ranges(4);
-
-$settings = find_one("SELECT * FROM settings");
-
-if($settings["over_time_cal"] == "weekly")
-{
-    $dates = get_weekly_sorted($timings);
-
-    for($i = 0; $i < count($dates); $i++)
+    foreach ($timings as $timing) 
     {
-        $total_working_time = 0;
-
-        for($j = 0; $j < count($dates[$i]); $j++)
-        {
-            $total_working_time += $dates[$i][$j]["working_time"];
-        }
-
-        if($total_working_time > $settings["weekly_over_time"])
-        {
-            $dates[$i][0]["total_over_time"] = $total_working_time - $settings["weekly_over_time"];
-        }
-        else 
-        {
-            $dates[$i][0]["total_over_time"] = 0;
-        }
-
-        $dates[$i][0]["total_elements"] = count($dates[$i]);
+        $summary["total_break_time"] += $timing["break_time"];
+        $summary["total_working_time"] += $timing["working_time"];
     }
 
-    $timings = array_merge(...$dates);
+    // calculate total over time
+
+    if($settings["over_time_cal"] == "weekly")
+    {
+        foreach ($timings as $timing) 
+        {
+            if(isset($timing["total_elements"]))
+            {
+                $summary["total_over_time"] += $timing["total_over_time"];
+            }
+        }
+    }
+    else 
+    {
+        foreach ($timings as $timing) 
+        {
+            $summary["total_over_time"] += $timing["over_time"];
+        }
+    }
+
+    // calculate total double time
+
+    if($settings["double_time_cal"] == "weekly")
+    {
+        foreach ($timings as $timing) 
+        {
+            if(isset($timing["total_elements"]))
+            {
+                $summary["total_double_time"] += $timing["total_double_time"];
+            }
+        }
+    }
+    else 
+    {
+        foreach ($timings as $timing) 
+        {
+            $summary["total_double_time"] += $timing["double_time"];
+        }
+    }
 }
 
+function set_settings(&$settings) 
+{
+    $settings = find_one("SELECT * FROM settings");  
+}
+
+function set_timings(&$timings) 
+{
+    $sql = "
+        SELECT 
+            users.name AS user_name, 
+            users.email AS user_email, 
+            timings.* 
+        FROM timings 
+        INNER JOIN users ON users.id = timings.user_id
+        ORDER BY timings.date DESC
+    ";
+
+    $data = [];
+
+    if(isset($_GET["from_date"]) && isset($_GET["to_date"])) 
+    {
+        $sql .= " WHERE DATE(date) >= :from_date AND DATE(date) <= :to_date";
+
+        $data["from_date"] = $_GET["from_date"];
+
+        $data["to_date"] = $_GET["to_date"];
+    }
+    else if(isset($_GET["range"]) && !empty($_GET["range"]))
+    {
+        $range = explode("@", $_GET["range"]);
+
+        $sql .= " WHERE DATE(date) >= :from_date AND DATE(date) <= :to_date";
+
+        $data["from_date"] = $range[0];
+
+        $data["to_date"] = $range[1];
+    }
+
+    $timings = find_all($sql, $data);
+}
+
+function modify_over_time(&$timings, $settings) 
+{
+    if($settings["over_time_cal"] == "weekly")
+    {
+        $dates = get_weekly_sorted($timings);
+
+        for($i = 0; $i < count($dates); $i++)
+        {
+            $total_working_time = 0;
+
+            for($j = 0; $j < count($dates[$i]); $j++)
+            {
+                $total_working_time += $dates[$i][$j]["working_time"];
+            }
+
+            if($total_working_time > $settings["weekly_over_time"])
+            {
+                $dates[$i][0]["total_over_time"] = $total_working_time - $settings["weekly_over_time"];
+            }
+            else 
+            {
+                $dates[$i][0]["total_over_time"] = 0;
+            }
+
+            $dates[$i][0]["total_elements"] = count($dates[$i]);
+        }
+
+        $timings = array_merge(...$dates);
+    }
+}
+
+function modify_double_time(&$timings, $settings) 
+{
+    if($settings["double_time_cal"] == "weekly")
+    {
+        $dates = get_weekly_sorted($timings);
+
+        for($i = 0; $i < count($dates); $i++)
+        {
+            $total_working_time = 0;
+
+            for($j = 0; $j < count($dates[$i]); $j++)
+            {
+                $total_working_time += $dates[$i][$j]["working_time"];
+            }
+
+            if($total_working_time > $settings["weekly_double_time"])
+            {
+                $dates[$i][0]["total_double_time"] = $total_working_time - $settings["weekly_double_time"];
+            }
+            else 
+            {
+                $dates[$i][0]["total_double_time"] = 0;
+            }
+
+            $dates[$i][0]["total_elements"] = count($dates[$i]);
+        }
+
+        $timings = array_merge(...$dates);
+    }
+}
+
+set_settings($settings);
+
+set_timings($timings);
+
+modify_over_time($timings, $settings);
+
+modify_double_time($timings, $settings);
+
+set_summary($summary, $timings, $settings);
+
 // echo "<pre>";
-// print_r(array_merge(...$dates));
+// print_r($timings);
 // echo "</pre>";
 
 ?>
@@ -85,6 +181,7 @@ if($settings["over_time_cal"] == "weekly")
 <?php require("header.php") ?>
 
 <div class="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-2 mb-2">
+
     <form class="flex items-center gap-2 border border-gray-300 p-2">
         <div class="flex items-center gap-2">
             From: <input type="date" name="from_date" id="from_date" class="form-control max-w-[200px]" value="<?= $_GET["from_date"] ?? "" ?>">
@@ -98,6 +195,7 @@ if($settings["over_time_cal"] == "weekly")
     <form class="flex items-center gap-2 border border-gray-300 p-2">
         <select class="form-control" name="range">
             <option value="">Select week</option>
+
             <?php foreach($pre_week_ranges as $ranges): ?>
                 <?php $value = $ranges["start_date"] . "@" . $ranges["end_date"] ?>
 
@@ -153,13 +251,19 @@ if($settings["over_time_cal"] == "weekly")
 
                     <?php if($settings["over_time_cal"] == "weekly"): ?>
                         <?php if(isset($timing["total_over_time"])): ?>
-                            <td style="border: 1px solid #ccc;" rowspan="<?= $timing["total_elements"] ?>"><?= get_sec_to_time($timing["total_over_time"]) ?></td>
+                            <td class="border-2 border-gray-300" rowspan="<?= $timing["total_elements"] ?>"><?= get_sec_to_time($timing["total_over_time"]) ?></td>
                         <?php endif; ?>
                     <?php else: ?>
                         <td><?= get_sec_to_time($timing["over_time"]) ?></td>
                     <?php endif; ?>
 
-                    <td><?= get_sec_to_time($timing["double_time"]) ?></td>
+                    <?php if($settings["double_time_cal"] == "weekly"): ?>
+                        <?php if(isset($timing["total_double_time"])): ?>
+                            <td class="border-2 border-gray-300" rowspan="<?= $timing["total_elements"] ?>"><?= get_sec_to_time($timing["total_double_time"]) ?></td>
+                        <?php endif; ?>
+                    <?php else: ?>
+                        <td><?= get_sec_to_time($timing["double_time"]) ?></td>
+                    <?php endif; ?>
 
                     <td><?= get_sec_to_time($timing["working_time"]) ?></td>
 
@@ -172,20 +276,16 @@ if($settings["over_time_cal"] == "weekly")
         <?php if(count($timings) > 0): ?>
             <tfoot>
                 <tr>
-                    <td>Total</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td><?= get_sec_to_time($total_break_time) ?></td>
-                    <?php if($settings["over_time_cal"] == "weekly"): ?>
-                        <td></td>
-                    <?php else: ?>
-                        <td><?= get_sec_to_time($total_over_time) ?></td>
-                    <?php endif; ?>
-                    <td><?= get_sec_to_time($total_double_time) ?></td>
-                    <td><?= get_sec_to_time($total_working_time) ?></td>
+                    <td colspan="6" align="left">Total</td>
+
+                    <td><?= get_sec_to_time($summary["total_break_time"]) ?></td>
+
+                    <td><?= get_sec_to_time($summary["total_over_time"]) ?></td>
+
+                    <td><?= get_sec_to_time($summary["total_double_time"]) ?></td>
+
+                    <td><?= get_sec_to_time($summary["total_working_time"]) ?></td>
+
                     <td></td>
                 </tr>
             </tfoot>

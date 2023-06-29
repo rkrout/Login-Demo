@@ -20,6 +20,7 @@ function get_dates_between($from_date, $to_date)
     $date_between = [];
 
     $i_date_from = mktime(1, 0, 0, substr($from_date, 5, 2), substr($from_date, 8, 2), substr($from_date, 0, 4));
+    
     $i_date_to = mktime(1, 0, 0, substr($to_date, 5, 2), substr($to_date, 8, 2), substr($to_date, 0, 4));
 
     if ($i_date_to >= $i_date_from) 
@@ -29,6 +30,7 @@ function get_dates_between($from_date, $to_date)
         while ($i_date_from<$i_date_to) 
         {
             $i_date_from += 86400; 
+
             array_push($date_between, date("Y-m-d", $i_date_from));
         }
     }
@@ -88,6 +90,7 @@ function get_majority_date($start_time, $end_time)
         if($split_time["working_time"] > $largest_working_time) 
         {
             $largest_working_time = $split_time["working_time"];
+            
             $majority_date = date("Y-m-d", strtotime($split_time["punch_in_time"]));
         }
     }
