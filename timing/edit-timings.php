@@ -8,23 +8,25 @@ $settings = find_one("SELECT * FROM settings LIMIT 1");
 
 foreach ($timings as $timing) 
 {
-    $office_time_in_sec = get_time_diff_in_sec($timing["punch_out_time"], $timing["punch_in_time"]);
+    $office_time = get_time_diff_in_sec($timing["punch_out_time"], $timing["punch_in_time"]);
 
-    $break_time_in_sec = intdiv($office_time_in_sec, $settings["break_interval"]) * $settings["break_time"];
+    $break_time = intdiv($office_time, $settings["break_interval"]) * $settings["break_time"];
 
-    $working_time_in_sec = $office_time_in_sec - $break_time_in_sec;
+    $working_time = $office_time - $break_time;
 
-    $over_time_in_sec = $working_time_in_sec > $settings["regular_time"] ? $working_time_in_sec - $settings["regular_time"] : 0;
+    $over_time = $working_time > $settings["regular_time"] ? $working_time - $settings["regular_time"] : 0;
+
+    // calculate double time - if employee works on out of consecutive day then double time = work time
 
     $range = get_week_range($timing["punch_in_time"]);
 
     if(strtotime($range["work_end_date"]) < strtotime(date("Y-m-d", strtotime($timing["punch_in_time"]))))
     {
-        $double_time_in_sec = $working_time_in_sec;
+        $double_time = $working_time;
     }
     else 
     {
-        $double_time_in_sec = $working_time_in_sec > $settings["double_time"] ? $working_time_in_sec - $settings["double_time"] : 0;
+        $double_time = $working_time > $settings["double_time"] ? $working_time - $settings["double_time"] : 0;
     }
 
     $sql = "
@@ -38,10 +40,10 @@ foreach ($timings as $timing)
     ";
 
     query($sql, [
-        "working_time" => $working_time_in_sec,
-        "over_time" => $over_time_in_sec,
-        "break_time" => $break_time_in_sec,
-        "double_time" => $double_time_in_sec,
+        "working_time" => $working_time,
+        "over_time" => $over_time,
+        "break_time" => $break_time,
+        "double_time" => $double_time,
         "id" => $timing["id"]
     ]);
 }
