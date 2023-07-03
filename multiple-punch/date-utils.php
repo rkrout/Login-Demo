@@ -7,7 +7,7 @@ function is_greater($first_date, $second_date)
 
 function get_time_diff_in_sec($first_time, $second_time)
 {
-    return strtotime($first_time) - strtotime($second_time);
+    return abs(strtotime($first_time) - strtotime($second_time));
 }
 
 function is_same_day($first_date, $second_date)
@@ -130,3 +130,172 @@ function get_day_from_date($date)
     return date("D", strtotime($date));
 }
 
+function get_week_range($date) 
+{
+    $date = strtotime($date);
+
+    $week = [];
+
+    $settings = find_one("SELECT * FROM settings LIMIT 1");
+    
+    if(date("l", $date) == $settings["week_start_day"])
+    {
+        $week["start_date"] = date("Y-m-d", $date);
+    }
+    else 
+    {
+        $week["start_date"] = date("Y-m-d", strtotime("last " . strtolower($settings["week_start_day"]), $date));
+    }
+    
+    $week["end_date"] = date("Y-m-d", strtotime("+6 days", strtotime($week["start_date"])));
+    
+    $week["work_end_date"] = date("Y-m-d", strtotime("+". $settings["consecutive_days"] - 1 ." days", strtotime($week["start_date"])));
+    
+    return $week;
+}
+
+function get_nearest_dates($date, $days)
+{
+    $dates = [];
+
+    $current_date = strtotime($date);
+
+    $previous_date = strtotime("-1 days", $current_date);
+
+    $next_date = strtotime("+1 days", $current_date);
+
+    $previous_day = strtolower(date("l", $previous_date));
+
+    $current_day = strtolower(date("l", $current_date));
+
+    $next_day = strtolower(date("l", $next_date));
+
+    foreach ($days as $day) 
+    {
+        if($day["day"] == $previous_day && $day["in_time"] && $day["out_time"])
+        {
+            if(strtotime($day["in_time"]) > strtotime($day["out_time"]))
+            {
+                $in_time = date("Y-m-d", $previous_date) . " " . $day["in_time"];
+
+                $out_time = date("Y-m-d", strtotime("+1 days", $previous_date)) . " " . $day["out_time"];
+
+                array_push($dates, [
+                    $in_time,
+                    $out_time
+                ]);
+            }
+            else 
+            {
+                $in_time = date("Y-m-d", $previous_date) . " " . $day["in_time"];
+
+                $out_time = date("Y-m-d", $previous_date) . " " . $day["out_time"];
+
+                array_push($dates, [
+                    $in_time,
+                    $out_time
+                ]);
+            }
+        }
+    }
+
+    foreach ($days as $day) 
+    {
+        if($day["day"] == $current_day && $day["in_time"] && $day["out_time"])
+        {
+            if(strtotime($day["in_time"]) > strtotime($day["out_time"]))
+            {
+                $in_time = date("Y-m-d", $current_date) . " " . $day["in_time"];
+
+                $out_time = date("Y-m-d", strtotime("+1 days", $current_date)) . " " . $day["out_time"];
+
+                array_push($dates, [
+                    $in_time,
+                    $out_time
+                ]);
+            }
+            else 
+            {
+                $in_time = date("Y-m-d", $current_date) . " " . $day["in_time"];
+
+                $out_time = date("Y-m-d", $current_date) . " " . $day["out_time"];
+
+                array_push($dates, [
+                    $in_time,
+                    $out_time
+                ]);
+            }
+        }
+    }
+    
+    foreach ($days as $day) 
+    {
+        if($day["day"] == $next_day && $day["in_time"] && $day["out_time"])
+        {
+            if(strtotime($day["in_time"]) > strtotime($day["out_time"]))
+            {
+                $in_time = date("Y-m-d", $next_date) . " " . $day["in_time"];
+
+                $out_time = date("Y-m-d", strtotime("+1 days", $next_date)) . " " . $day["out_time"];
+
+                array_push($dates, [
+                    $in_time,
+                    $out_time
+                ]);
+            }
+            else 
+            {
+                $in_time = date("Y-m-d", $next_date) . " " . $day["in_time"];
+
+                $out_time = date("Y-m-d", $next_date) . " " . $day["out_time"];
+
+                array_push($dates, [
+                    $in_time,
+                    $out_time
+                ]);
+            }
+        }
+    }
+
+    return $dates;
+}
+
+function get_actual_date($date, $days)
+{
+    $nearest_days = get_nearest_dates($date, $days);
+
+    foreach ($nearest_days as $day) 
+    {
+        if(strtotime($day[0]) <= strtotime($date) && strtotime($day[1]) >= strtotime($date))
+        {
+            return $day;
+        }
+    }
+
+    $actual_day = $nearest_days[0];
+
+    $actual_day_distance = INF;
+
+    foreach ($nearest_days as $day) 
+    {
+        $distance_1 = abs(strtotime($day[0]) - strtotime($date));
+
+        $distance_2 = abs(strtotime($day[1]) - strtotime($date));
+
+        if($actual_day_distance > $distance_1 || $actual_day_distance > $distance_2)
+        {
+            $actual_day_distance = $distance_1 > $distance_2 ? $distance_1 : $distance_2;
+
+            $actual_day = $day;
+        }
+    }
+
+    return $actual_day;
+}
+
+
+
+//     require("db-utils.php");
+// $settings = find_all("SELECT * FROM schedule_days WHERE schedule_id = 15");
+
+// print_r(get_actual_date("2023-07-02 01:00", $settings));

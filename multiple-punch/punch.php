@@ -1,67 +1,75 @@
 <?php
 
 require_once("db-utils.php");
+require_once("date-utils.php");
 require_once("session-utils.php");
 
 if($_SERVER["REQUEST_METHOD"] == "POST")
 {
-    $working_day = find_one("SELECT * from working_days WHERE start_time <= :time AND end_time >= :time", [
-        "time" => [
-            $_POST["time"],
+    $sql = "
+        SELECT 
+            schedule_days.day,
+            schedule_days.in_time,
+            schedule_days.out_time
+        FROM user_schedules
+        INNER JOIN schedules ON schedules.id = user_schedules.schedule_id 
+        INNER JOIN schedule_days ON schedule_days.schedule_id = schedules.id
+        WHERE user_schedules.user_id = :user_id
+    ";
+
+    $days = find_all($sql, ["user_id" => $_POST["user_id"]]);
+
+    $actual_date = get_actual_date($_POST["time"], $days);
+    
+    $working_day = find_one("SELECT * FROM working_days WHERE start_time = :start_time AND end_time = :end_time AND user_id = :user_id LIMIT 1", [
+        "start_time" => [
+            $actual_date[0],
             PDO::PARAM_STR
-        ]
+        ],
+        "end_time" => [
+            $actual_date[1],
+            PDO::PARAM_STR
+        ],
+        "user_id" => $_POST["user_id"]
     ]);
     
-    if(!$working_day)
+    if($working_day)
     {
-        $working_days = find_all("SELECT * FROM working_days");
+        $punches = find_all("SELECT * FROM punches WHERE working_day_id = " . $working_day["id"]);
     
-        $smallest_diff = INF;
+        $total_punches = count($punches);
     
-        foreach ($working_days as $l_working_day) 
+        if($total_punches == 0 || $punches[$total_punches - 1]["punch_out_time"])
         {
-            $diff = abs(strtotime($l_working_day["start_time"]) - strtotime($_POST["time"]));
-    
-            if($diff < $smallest_diff)
-            {
-                $smallest_diff = $diff;
-                $working_day = $l_working_day;
-            }
-    
-            $diff = abs(strtotime($l_working_day["end_time"]) - strtotime($_POST["time"]));
-    
-            if($diff < $smallest_diff)
-            {
-                $smallest_diff = $diff;
-                $working_day = $l_working_day;
-            }
+            insert("punches", [
+                "working_day_id" => $working_day["id"],
+                "punch_in_time" => date("H:i:s", strtotime($_POST["time"]))
+            ]);
         }
-    }
-    
-    $punches = find_all("SELECT * FROM punches WHERE working_day_id = :working_day_id", [
-        "working_day_id" => $working_day["id"]
-    ]);
-    
-    $punch_count = count($punches);
-    
-    if($punch_count == 0 || $punches[$punch_count - 1]["punch_out_time"])
-    {
-        query("INSERT INTO punches (punch_in_time, working_day_id) VALUES (:punch_in_time, :working_day_id)", [
-            "punch_in_time" => [
-                $_POST["time"],
-                PDO::PARAM_STR
-            ],
-            "working_day_id" => $working_day["id"]
-        ]);
+        else 
+        {
+            $last_punch = $punches[$total_punches - 1];
+
+            query("UPDATE punches SET punch_out_time = :punch_out_time WHERE id = :id", [
+                "punch_out_time" => [
+                    date("H:i:s", strtotime($_POST["time"])),
+                    PDO::PARAM_STR
+                ],
+                "id" => $last_punch["id"]
+            ]);
+        }
     }
     else 
     {
-        query("UPDATE punches SET punch_out_time = :punch_out_time WHERE working_day_id = :working_day_id", [
-            "punch_out_time" => [
-                $_POST["time"],
-                PDO::PARAM_STR
-            ],
-            "working_day_id" => $working_day["id"]
+        $last_id = insert("working_days", [
+            "start_time" => $actual_date[0],
+            "end_time" => $actual_date[1],
+            "user_id" => $_POST["user_id"]
+        ]);
+
+        insert("punches", [
+            "working_day_id" => $last_id,
+            "punch_in_time" => date("H:i:s", strtotime($_POST["time"]))
         ]);
     }
 

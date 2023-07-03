@@ -32,6 +32,12 @@
                     <a href="/multiple-punch/punch.php" class="<?= in_array($file_name, ["punch"]) ? "text-white font-bold" : "text-gray-100" ?>">Punch</a>
                 </li>
                 <li>
+                    <a href="/multiple-punch/user-schedules.php" class="<?= in_array($file_name, ["user-schedules", "edit-user-schedule"]) ? "text-white font-bold" : "text-gray-100" ?>">User Schedules</a>
+                </li>
+                <li>
+                    <a href="/multiple-punch/schedules.php" class="<?= in_array($file_name, ["schedules", "edit-schedule"]) ? "text-white font-bold" : "text-gray-100" ?>">Schedules</a>
+                </li>
+                <li>
                     <a href="/multiple-punch/settings.php" class="<?= in_array($file_name, ["settings", "edit-settings"]) ? "text-white font-bold" : "text-gray-100" ?>">Settings</a>
                 </li>
             </ul>

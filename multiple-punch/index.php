@@ -2,97 +2,51 @@
 
 require_once("db-utils.php");
 require_once("date-utils.php");
-require("header.php");
+
+function set_break_time(&$working_days, $settings) 
+{
+    for ($i = 0; $i < count($working_days); $i++) 
+    {
+        $total_punches = count($working_days[$i]["punches"]);
+
+        if($total_punches > 0 && $working_days[$i]["punches"][$total_punches - 1]["punch_out_time"])
+        {
+            $office_time = get_time_diff_in_sec($working_days[$i]["punches"][$total_punches - 1]["punch_out_time"], $working_days[$i]["punches"][0]["punch_in_time"]);
+
+            $break_time = intdiv($office_time, $settings["break_interval"]) * $settings["break_time"];
+    
+            $working_time = $office_time - $break_time;
+    
+            $over_time = $working_time > $settings["regular_time"] ? $working_time - $settings["regular_time"] : 0;
+
+            $working_days[$i] = array_merge($working_days[$i], [
+                "office_time" => $office_time,
+                "break_time" => $break_time,
+                "working_time" => $working_time,
+                "over_time" => $over_time
+            ]);
+        }
+    }
+}
 
 $working_days = find_all("SELECT working_days.*, users.name AS user_name FROM working_days INNER JOIN users ON users.id = working_days.user_id");
+
+$settings = find_one("SELECT * FROM settings LIMIT 1");
 
 for($i = 0; $i < count($working_days); $i++)
 {
     $working_days[$i]["punches"] = find_all("SELECT punch_in_time, punch_out_time FROM punches WHERE working_day_id = " . $working_days[$i]["id"]);
 }
 
+set_break_time($working_days, $settings);
+
+echo "<pre>";
+print_r($working_days);
+echo "</pre>";
+
 ?>
 
-<?php
-// function get_dates($date)
-// {
-//     $settings = find_one("SELECT * FROM settings");
-//     $result = [];
-//     if(strtotime($settings["in_time"]) >= strtotime($settings["out_time"]))
-//     {
-//         $start_time = $date . " " . $settings["in_time"];
-
-//         $end_time = date("Y-m-d", strtotime("+1 days", strtotime($date))) . " " . $settings["out_time"];
-
-//         array_push($result, [
-//             $start_time,
-//             $end_time
-//         ]);
-
-//         $next_day = date("Y-m-d", strtotime("+1 days", strtotime($date)));
-
-//         $start_time = $next_day . " " . $settings["in_time"];
-
-//         $end_time = date("Y-m-d", strtotime("+1 days", strtotime($next_day))) . " " . $settings["out_time"];
-
-//         array_push($result, [
-//             $start_time,
-//             $end_time
-//         ]);
-
-//         $previous_day = date("Y-m-d", strtotime("-1 days", strtotime($date)));
-
-//         $start_time = $previous_day . " " . $settings["in_time"];
-
-//         $end_time = date("Y-m-d", strtotime("+1 days", strtotime($previous_day))) . " " . $settings["out_time"];
-
-//         array_push($result, [
-//             $start_time,
-//             $end_time
-//         ]);
-//     }
-//     else 
-//     {
-//         $start_time = $date . " " . $settings["in_time"];
-
-//         $end_time = $date . " " . $settings["out_time"];
-
-//         array_push($result, [
-//             $start_time,
-//             $end_time
-//         ]);
-
-//         $next_day = date("Y-m-d", strtotime("+1 days", strtotime($date)));
-
-//         $start_time = $next_day . " " . $settings["in_time"];
-
-//         $end_time = $next_day . " " . $settings["out_time"];
-
-//         array_push($result, [
-//             $start_time,
-//             $end_time
-//         ]);
-
-//         $previous_day = date("Y-m-d", strtotime("-1 days", strtotime($date)));
-
-//         $start_time = $previous_day . " " . $settings["in_time"];
-
-//         $end_time = $previous_day . " " . $settings["out_time"];
-
-//         array_push($result, [
-//             $start_time,
-//             $end_time
-//         ]);
-//     }
-
-//     return $result;
-// }
-
-// echo "<pre>";
-// print_r(get_dates("2023-06-28"));
-// echo "</pre>";
-?>
-
+<?php require("header.php")  ?>
 
 <div class="table-responsive">
     <table class="table min-w-[1024px]">
@@ -102,6 +56,7 @@ for($i = 0; $i < count($working_days); $i++)
                 <th>Date</th>
                 <th>Punches</th>
                 <th>Break Time</th>
+                <th>Over Time</th>
                 <th>Working Time</th>
                 <th>Office Time</th>
             </tr>
@@ -119,29 +74,21 @@ for($i = 0; $i < count($working_days); $i++)
                     <tr>
                         <td><?= $working_day["user_name"] ?></td>
 
-                        <td>
-                            <?php
-                                $start_time = date("d-m-Y", strtotime($working_day["start_time"]));
-                                $end_time = date("d-m-Y", strtotime($working_day["end_time"]));
-                            ?>
-                            <?php if($start_time == $end_time): ?>
-                                <?= $start_time ?>
-                            <?php else: ?>
-                                <?= $start_time . " - " . $end_time ?>
-                            <?php endif; ?>
-                        </td>
-                        
+                        <td><?= date("d-m-Y", strtotime($working_day["start_time"])); ?></td>
+
                         <td>
                             <?php foreach($working_day["punches"] as $punches): ?>
                                 <p><?= date("h:i A", strtotime($punches["punch_in_time"])) . " - " . ($punches["punch_out_time"] ? date("h:i A", strtotime($punches["punch_out_time"])) : "NA") ?></p>
                             <?php endforeach; ?> 
                         </td>
 
-                        <td><?= get_sec_to_time($working_day["break_time"]) ?></td>
+                        <td><?= isset($working_day["break_time"]) ? get_sec_to_time($working_day["break_time"]) : "NA" ?></td>
 
-                        <td><?= get_sec_to_time($working_day["working_time"]) ?></td>
+                        <td><?= isset($working_day["over_time"]) ?  get_sec_to_time($working_day["over_time"]) : "NA" ?></td>
 
-                        <td><?= get_sec_to_time($working_day["office_time"]) ?></td>
+                        <td><?= isset($working_day["working_time"]) ? get_sec_to_time($working_day["working_time"]) : "NA" ?></td>
+
+                        <td><?= isset($working_day["office_time"]) ? get_sec_to_time($working_day["office_time"]) : "NA" ?></td>
                     </tr>
                 <?php endif; ?>
             <?php endforeach; ?>

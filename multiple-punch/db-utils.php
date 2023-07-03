@@ -50,7 +50,14 @@ function insert($table, $data)
 
     foreach ($data as $key => $value) 
     {
-        $stmt->bindValue($key, $value);
+        if(is_array($value))
+        {
+            $stmt->bindValue($key, $value[0], $value[1]);
+        }
+        else 
+        {
+            $stmt->bindValue($key, $value);
+        }
     }
 
     $stmt->execute();
@@ -65,14 +72,14 @@ function query($sql, $data = [])
     $stmt = $pdo->prepare($sql);
 
     foreach ($data as $key => $value) 
-    {
+    {;
         if(is_array($value))
         {
-            $stmt->bindParam($key, $value[0], $value[1]);
+            $stmt->bindValue($key, $value[0], $value[1]);
         }
         else 
         {
-            $stmt->bindParam($key, $value);
+            $stmt->bindValue($key, $value, PDO::PARAM_STR);
         }
     }
 
