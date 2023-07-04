@@ -2,10 +2,6 @@
 
 if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["id"])) 
 {
-    // echo "<pre>";
-    // print_r($_FILES);
-    // echo "</pre>";
-    // die;
     $games = json_decode(file_get_contents("games.json"), true) ?? [];
 
     for($i = 0; $i < count($games); $i++)
@@ -28,13 +24,18 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["id"]))
                 "name" => $_POST["name"],
                 "logo_url" => $image_name,
                 "link" => $_POST["link"],
-                "link_type" => $_POST["link_type"],
+                "target" => $_POST["target"],
                 "show" => $_POST["show"] == "true"
             ];   
         }
     }
 
     file_put_contents("games.json", json_encode($games));
+
+    $alert = [
+        "type" => "success",
+        "message" => "Game updated successfully"
+    ];
 }
 
 else if($_SERVER["REQUEST_METHOD"] == "POST") 
@@ -56,11 +57,16 @@ else if($_SERVER["REQUEST_METHOD"] == "POST")
         "name" => $_POST["name"],
         "logo_url" => $image_name,
         "link" => $_POST["link"],
-        "link_type" => $_POST["link_type"],
+        "target" => $_POST["target"],
         "show" => $_POST["show"] == "true"
     ]);
 
     file_put_contents("games.json", json_encode($games));
+
+    $alert = [
+        "type" => "success",
+        "message" => "Game added successfully"
+    ];
 }
 
 $games = json_decode(file_get_contents("games.json"), true) ?? [];
@@ -78,11 +84,20 @@ $games = json_decode(file_get_contents("games.json"), true) ?? [];
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
 
 <body>
     <div class="container my-5">
+        <?php if(isset($alert)): ?>
+            <div class="alert alert-<?= $alert["type"] ?> alert-dismisable"><?= $alert["message"] ?></div>
+        <?php endif; ?>
+        
         <button type="button" class="btn btn-primary mb-2" data-bs-toggle="modal"
         data-bs-target="#createModal">Create New</button>
 
@@ -93,8 +108,7 @@ $games = json_decode(file_get_contents("games.json"), true) ?? [];
                     <th>Name</th>
                     <th>Logo</th>
                     <th>Link</th>
-                    <th>Link Type</th>
-                    <th>Show</th>
+                    <th>Target</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -110,21 +124,30 @@ $games = json_decode(file_get_contents("games.json"), true) ?? [];
                         <td><?= $game["id"] ?></td>
                         <td><?= $game["name"] ?></td>
                         <td>
-                            <img src="uploads/<?= $game["logo_url"] ?>" width="100px" class="img-fluid">
+                            <img src="uploads/<?= $game["logo_url"] ?>" width="60px" class="img-fluid">
                         </td>
                         <td>
                             <a href="<?= $game["link"] ?>"><?= $game["link"] ?></a>
                         </td>
-                        <td><?= $game["link_type"] ?></td>
-                        <td>
-                            <?php if($game["show"]): ?>
-                                <span class="material-symbols-outlined text-success">check_circle</span>
-                            <?php else: ?>
-                                <span class="material-symbols-outlined text-danger">cancel</span>
-                            <?php endif; ?>
-                        </td>
+
+                        <td><?= $game["target"] ?></td>
+
                         <td data-game='<?= json_encode($game) ?>'>
-                            <button type="button" class="btn btn-sm btn-primary btn-edit">Edit</button>
+                            <div class="d-flex align-items-center gap-2">
+                                <?php if($game["show"]): ?>
+                                    <button type="button" class="btn btn-sm btn-warning">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                <?php else: ?>
+                                    <button type="button" class="btn btn-sm btn-danger">
+                                        <i class="fas fa-close"></i>
+                                    </button>
+                                <?php endif; ?>
+
+                                <button type="button" class="btn btn-sm btn-secondary btn-edit">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                 <?php endforeach; ?>
@@ -134,6 +157,7 @@ $games = json_decode(file_get_contents("games.json"), true) ?? [];
 
     <form enctype="multipart/form-data" method="post" class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
         <input type="hidden" name="id">
+
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -157,9 +181,9 @@ $games = json_decode(file_get_contents("games.json"), true) ?? [];
                         <input type="text" class="form-control" name="link" id="link">
                     </div>
                     <div class="mb-3">
-                        <label for="link_type" class="form-label">Link Type</label>
-                        <select name="link_type" id="link_type" class="form-control form-select">
-                            <option value="Redirect">Redirect</option>
+                        <label for="target" class="form-label">Target</label>
+                        <select name="target" id="target" class="form-control form-select">
+                            <option value="New Tab">New Tab</option>
                             <option value="Same Page">Same Page</option>
                         </select>
                     </div>
@@ -198,9 +222,9 @@ $games = json_decode(file_get_contents("games.json"), true) ?? [];
                         <input type="text" class="form-control" name="link" id="link">
                     </div>
                     <div class="mb-3">
-                        <label for="link_type" class="form-label">Link Type</label>
-                        <select name="link_type" id="link_type" class="form-control form-select">
-                            <option value="Redirect">Redirect</option>
+                        <label for="target" class="form-label">Target</label>
+                        <select name="target" id="target" class="form-control form-select">
+                            <option value="New Tab">New Tab</option>
                             <option value="Same Page">Same Page</option>
                         </select>
                     </div>
@@ -229,8 +253,8 @@ $games = json_decode(file_get_contents("games.json"), true) ?? [];
 
         $("#editModal").find("input[name=name]").val(game.name)
         $("#editModal").find("input[name=link]").val(game.link)
-        $("#editModal").find("select[name=link_type] option").prop("selected", false)
-        $("#editModal").find(`select[name=link_type] option[value="${game.link_type}"]`).prop("selected", true)
+        $("#editModal").find("select[name=target] option").prop("selected", false)
+        $("#editModal").find(`select[name=target] option[value="${game.target}"]`).prop("selected", true)
         $("#editModal").find("input[name=show]").prop("checked", game.show)
         $("#editModal").find("img").attr("src", `uploads/${game.logo_url}`)
         $("#editModal input[type=hidden]").val(game.id)
