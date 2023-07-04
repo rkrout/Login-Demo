@@ -43,7 +43,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST")
         {
             insert("punches", [
                 "working_day_id" => $working_day["id"],
-                "punch_in_time" => date("H:i:s", strtotime($_POST["time"]))
+                "punch_in_time" => date("Y-m-d H:i:s", strtotime($_POST["time"]))
             ]);
         }
         else 
@@ -52,7 +52,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST")
 
             query("UPDATE punches SET punch_out_time = :punch_out_time WHERE id = :id", [
                 "punch_out_time" => [
-                    date("H:i:s", strtotime($_POST["time"])),
+                    date("Y-m-d H:i:s", strtotime($_POST["time"])),
                     PDO::PARAM_STR
                 ],
                 "id" => $last_punch["id"]
@@ -69,7 +69,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST")
 
         insert("punches", [
             "working_day_id" => $last_id,
-            "punch_in_time" => date("H:i:s", strtotime($_POST["time"]))
+            "punch_in_time" => date("Y-m-d H:i:s", strtotime($_POST["time"]))
         ]);
     }
 

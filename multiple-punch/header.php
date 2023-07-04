@@ -22,7 +22,7 @@
 <body>
     <nav class="bg-orange-600 h-16 shadow-lg">
         <div class="max-w-5xl mx-auto h-full flex items-center justify-between">
-            <a href="/multiple-punch/index.php" class="text-2xl text-white font-bold">Multiple Punch</a>
+            <a href="/multiple-punch/index.php" class="text-2xl text-white font-bold">Employee Management</a>
 
             <ul class="flex gap-8 text-white">
                 <li>
@@ -35,7 +35,7 @@
                     <a href="/multiple-punch/user-schedules.php" class="<?= in_array($file_name, ["user-schedules", "edit-user-schedule"]) ? "text-white font-bold" : "text-gray-100" ?>">User Schedules</a>
                 </li>
                 <li>
-                    <a href="/multiple-punch/schedules.php" class="<?= in_array($file_name, ["schedules", "edit-schedule"]) ? "text-white font-bold" : "text-gray-100" ?>">Schedules</a>
+                    <a href="/multiple-punch/schedules.php" class="<?= in_array($file_name, ["schedules", "edit-schedule", "create-schedule"]) ? "text-white font-bold" : "text-gray-100" ?>">Schedules</a>
                 </li>
                 <li>
                     <a href="/multiple-punch/settings.php" class="<?= in_array($file_name, ["settings", "edit-settings"]) ? "text-white font-bold" : "text-gray-100" ?>">Settings</a>

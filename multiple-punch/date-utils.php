@@ -130,26 +130,24 @@ function get_day_from_date($date)
     return date("D", strtotime($date));
 }
 
-function get_week_range($date) 
+function get_week_range($date, $week_start_day, $consecutive_days) 
 {
     $date = strtotime($date);
 
     $week = [];
-
-    $settings = find_one("SELECT * FROM settings LIMIT 1");
     
-    if(date("l", $date) == $settings["week_start_day"])
+    if(date("l", $date) == $week_start_day)
     {
         $week["start_date"] = date("Y-m-d", $date);
     }
     else 
     {
-        $week["start_date"] = date("Y-m-d", strtotime("last " . strtolower($settings["week_start_day"]), $date));
+        $week["start_date"] = date("Y-m-d", strtotime("last " . strtolower($week_start_day), $date));
     }
     
     $week["end_date"] = date("Y-m-d", strtotime("+6 days", strtotime($week["start_date"])));
     
-    $week["work_end_date"] = date("Y-m-d", strtotime("+". $settings["consecutive_days"] - 1 ." days", strtotime($week["start_date"])));
+    $week["work_end_date"] = date("Y-m-d", strtotime("+". $consecutive_days - 1 ." days", strtotime($week["start_date"])));
     
     return $week;
 }
@@ -293,9 +291,12 @@ function get_actual_date($date, $days)
     return $actual_day;
 }
 
+// print_r(get_week_range("2023-07-03", "tuesday", 5));
 
 
 //     require("db-utils.php");
 // $settings = find_all("SELECT * FROM schedule_days WHERE schedule_id = 15");
 
 // print_r(get_actual_date("2023-07-02 01:00", $settings));
+
+// print_r(get_majority_date("2023-07-12 10:00", "2023-07-13 07:00"));

@@ -9,6 +9,7 @@ function insert($table, $data)
     $sql = "INSERT INTO $table (";
 
     $index = 0;
+
     foreach ($data as $key => $value) 
     {
         $sql .= $key;
@@ -28,6 +29,7 @@ function insert($table, $data)
     $sql .= " VALUES (";
 
     $index = 0;
+    
     foreach ($data as $key => $value) 
     {
         $sql .= ":$key";

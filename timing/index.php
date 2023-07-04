@@ -59,6 +59,11 @@ function set_summary(&$summary, $timings, $settings)
     }
 }
 
+function set_pre_weeks(&$pre_weeks) 
+{
+    $pre_weeks = get_pre_week_ranges(4);
+}
+
 function set_settings(&$settings) 
 {
     $settings = find_one("SELECT * FROM settings");  
@@ -73,7 +78,6 @@ function set_timings(&$timings)
             timings.* 
         FROM timings 
         INNER JOIN users ON users.id = timings.user_id
-        ORDER BY timings.date DESC
     ";
 
     $data = [];
@@ -96,6 +100,8 @@ function set_timings(&$timings)
 
         $data["to_date"] = $range[1];
     }
+
+    $sql .= " ORDER BY timings.date DESC";
 
     $timings = find_all($sql, $data);
 }
@@ -172,6 +178,8 @@ modify_double_time($timings, $settings);
 
 set_summary($summary, $timings, $settings);
 
+set_pre_weeks($pre_weeks);
+
 // echo "<pre>";
 // print_r($timings);
 // echo "</pre>";
@@ -182,24 +190,24 @@ set_summary($summary, $timings, $settings);
 
 <div class="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-2 mb-2">
 
-    <form class="flex items-center gap-2 border border-gray-300 p-2">
+    <form class="flex items-center gap-2 border border-gray-300 p-2" id="rangeSearchForm">
         <div class="flex items-center gap-2">
             From: <input type="date" name="from_date" id="from_date" class="form-control max-w-[200px]" value="<?= $_GET["from_date"] ?? "" ?>">
 
             To: <input type="date" name="to_date" id="to_date" class="form-control max-w-[200px]"value="<?= $_GET["to_date"] ?? "" ?>">
         </div>
 
-        <button class="btn btn-primary">Search</button>
+        <button class="btn-search btn btn-primary">Search</button>
     </form>
 
     <form class="flex items-center gap-2 border border-gray-300 p-2">
         <select class="form-control" name="range">
             <option value="">Select week</option>
 
-            <?php foreach($pre_week_ranges as $ranges): ?>
-                <?php $value = $ranges["start_date"] . "@" . $ranges["end_date"] ?>
+            <?php foreach($pre_weeks as $week): ?>
+                <?php $value = $week["start_date"] . "@" . $week["end_date"] ?>
 
-                <option <?= $value == (isset($_GET["range"]) ? $_GET["range"] : "") ? "selected" : "" ?> value="<?= $value ?>"><?= $ranges["start_date"] . " - " . $ranges["end_date"] ?></option>
+                <option <?= $value == (isset($_GET["range"]) ? $_GET["range"] : "") ? "selected" : "" ?> value="<?= $value ?>"><?= $week["start_date"] . " - " . $week["end_date"] ?></option>
             <?php endforeach; ?>
         </select>
 
@@ -233,6 +241,12 @@ set_summary($summary, $timings, $settings);
             </tr>
         </thead>
         <tbody>
+            <?php if(count($timings) == 0): ?>
+                <tr>
+                    <td colspan="11">No Data Found</td>
+                </tr>
+            <?php endif; ?>
+
             <?php foreach($timings as $timing): ?>
                 <tr>
                     <td><?= $timing["user_name"] ?></td>
@@ -304,17 +318,24 @@ set_summary($summary, $timings, $settings);
             window.location.href = "/timing/index.php"
         })
 
-        $("#dataTable").DataTable({
-            dom: "Bfrtip",
-            pageLength:10,
-            buttons: [
-                "copy", "csv", "excel", "pdf", "print"
-            ]
-        });
+        // $("#dataTable").DataTable({
+        //     dom: "Bfrtip",
+        //     pageLength:10,
+        //     buttons: [
+        //         "copy", "csv", "excel", "pdf", "print"
+        //     ]
+        // });
 
-        if($("span .paginate_button").length == 1) {
-            $("span .paginate_button").hide()
-        } 
+        // if($("span .paginate_button").length == 1) {
+        //     $("span .paginate_button").hide()
+        // } 
+
+        $("#rangeSearchForm").submit(function(event){
+            if($(event.target).find("input[name=from_date]").val() == "" || $(event.target).find("input[name=to_date]").val() == "") {
+                event.preventDefault()
+                alert("Please select from date and to date")
+            }
+        })
 
         $(".btn-download").click(function(){
             let from_date = $("input[name=from_date]").val()
