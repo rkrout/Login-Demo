@@ -8,58 +8,237 @@ $games = json_decode(file_get_contents("games.json"), true) ?? [];
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin</title>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-    <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  <title>Blue Summit Technologies - Demo Page</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <!-- Favicons -->
+  <link href="assets/img/favicon.png" rel="icon">
+  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Google Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+    rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="assets/vendor/aos/aos.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+
+  <!-- Template Main CSS File -->
+  <link href="assets/css/style.css" rel="stylesheet">
+
+  <style>
+    .circles {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .circles li {
+      position: absolute;
+      display: block;
+      list-style: none;
+      width: 20px;
+      height: 20px;
+      background: rgba(156, 39, 176, 0.2);
+      animation: animate 25s linear infinite;
+      bottom: -150px;
+
+    }
+
+    .circles li:nth-child(1) {
+      left: 25%;
+      width: 80px;
+      height: 80px;
+      animation-delay: 0s;
+    }
+
+    .circles li:nth-child(2) {
+      left: 10%;
+      width: 20px;
+      height: 20px;
+      animation-delay: 2s;
+      animation-duration: 12s;
+    }
+
+    .circles li:nth-child(3) {
+      left: 70%;
+      width: 20px;
+      height: 20px;
+      animation-delay: 4s;
+    }
+
+    .circles li:nth-child(4) {
+      left: 40%;
+      width: 60px;
+      height: 60px;
+      animation-delay: 0s;
+      animation-duration: 18s;
+    }
+
+    .circles li:nth-child(5) {
+      left: 65%;
+      width: 20px;
+      height: 20px;
+      animation-delay: 0s;
+    }
+
+    .circles li:nth-child(6) {
+      left: 75%;
+      width: 110px;
+      height: 110px;
+      animation-delay: 3s;
+    }
+
+    .circles li:nth-child(7) {
+      left: 35%;
+      width: 150px;
+      height: 150px;
+      animation-delay: 7s;
+    }
+
+    .circles li:nth-child(8) {
+      left: 50%;
+      width: 25px;
+      height: 25px;
+      animation-delay: 15s;
+      animation-duration: 45s;
+    }
+
+    .circles li:nth-child(9) {
+      left: 20%;
+      width: 15px;
+      height: 15px;
+      animation-delay: 2s;
+      animation-duration: 35s;
+    }
+
+    .circles li:nth-child(10) {
+      left: 85%;
+      width: 150px;
+      height: 150px;
+      animation-delay: 0s;
+      animation-duration: 11s;
+    }
+
+    @keyframes animate {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+        border-radius: 0;
+      }
+
+      100% {
+        transform: translateY(-1000px) rotate(720deg);
+        opacity: 0;
+        border-radius: 50%;
+      }
+
+    }
+  </style>
 </head>
 
-<body class="bg-light" style="background: #d8e7f5;">
-    <div class="container my-5">
-        <img src="/assets/images/gaming_img.png" class="img-fluid mx-auto d-block mb-4" width="200px">
+<body class="section-bg" style="background: #d8e7f5;">
 
-        <div class="d-flex align-items-center gap-2 justify-content-center mb-4">
-            <span class="fw-semibold text-secondary-emphasis">Powered by</span>
-            <img src="/assets/images/hounslow_council.png" width="150px" class="img-fluid">
+  <!-- ======= Hero Section ======= -->
+  <!-- <section id="hero">
+
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-6 pb-2 pb-lg-0 d-flex flex-column justify-content-center" data-aos="fade-up">
+          <div>
+            <h1>Welcome to the world of gaming !</h1>
+            <h2>Get ready to embark on exciting adventures, battle fierce enemies, and explore immersive virtual worlds.</h2>
+            <a href="#gamingviewsec" class="btn-get-started scrollto mb-5">Get Started</a>
+          </div>
+        </div>
+        <div class="col-lg-6 hero-img text-center d-flex flex-column justify-content-center align-items-center" data-aos="fade-left">
+          <img src="assets/img/icon/hounslow_council.png" class="img-fluid" alt="">
+        </div>
+      </div>
+    </div>
+
+  </section> -->
+  <div class="area">
+    <ul class="circles">
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+    </ul>
+  </div>
+  <main id="main" style="z-index: 1000;">
+
+
+    <!-- ======= Services Section ======= -->
+    <section id="gamingviewsec" class="services section-bg d-flex align-items-center justify-content-center flex-row"
+      style="min-height: 100vh; background: #d8e7f5;">
+      <div class="container">
+
+        <div class="section-title" data-aos="fade-up">
+          <h2><img src="assets/img/icon/gaming_img.png" alt="" style="width:200px; margin:10px auto 10px auto;"></h2>
+          <p class="fw-bold">Powered by <span style="color:#7a2a83;"><img src="assets/img/icon/hounslow_council.png"
+                style="width: 150px;" /></span></p>
         </div>
 
         <div class="row">
-            <?php foreach($games as $game): ?>
-                <?php if($game["show"] == 1): ?>
-                    <a href="<?= $game["link"] ?>" <?= $game["link_type"] == "Redirect" ? "target='_blank'" : "" ?> class="col-3">
-                        <img src="uploads/<?= $game["logo_url"] ?>" class="img-fluid shadow">
-                    </a>
-                <?php endif; ?>
-            <?php endforeach; ?>
+          <!--<div class="col-xs-6 col-sm-6 col-md-4 col-lg-3 d-flex align-items-stretch mb-5 mb-lg-4" data-aos="zoom-in">
+            <div class="icon-box icon-box-pink">
+              <a href="https://gameforge.com/en-US/littlegames/minecraft-games/" target="_blank"><img src="assets/img/icon/image1.png" class="img-fluid" alt="" /></a>
+            </div>
+	  </div>-->
+
+          <?php foreach($games as $game): ?>
+            <?php if($game["show"]): ?>
+              <div class="col-xs-6 col-sm-6 col-md-4 col-lg-3 d-flex align-items-stretch mb-5 mb-lg-4" data-aos="zoom-in"
+              data-aos-delay="200"
+            >
+              <div class="icon-box icon-box-green">
+                <a href="<?= $game["link"] ?>" <?= $game["target"] == "New Tab" ? "target='_blank'" : "" ?>><img src="<?= "/gaming/uploads/" . $game["logo_url"] ?>"
+                    class="img-fluid" alt="" /></a>
+              </div>
+            </div>
+            <?php endif; ?>
+          <?php endforeach; ?>
         </div>
-    </div>
+      </div>
+    </section><!-- End Services Section -->
+
+
+
+
+
+
+
+  </main><!-- End #main -->
+
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
+      class="bi bi-arrow-up-short"></i></a>
+
+
+
+  <!-- Vendor JS Files -->
+  <script src="assets/vendor/aos/aos.js"></script>
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Template Main JS File -->
+  <script src="assets/js/main.js"></script>
+
 </body>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-<script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
-
-<script>
-    $(".btn-edit").click(function(event){
-        const game = JSON.parse($(event.target).parent().attr("data-game"));
-
-        $("#editModal").find("input[name=name]").val(game.name)
-        $("#editModal").find("input[name=link]").val(game.link)
-        $("#editModal").find("select[name=link_type] option").prop("selected", false)
-        $("#editModal").find(`select[name=link_type] option[value="${game.link_type}"]`).prop("selected", true)
-        $("#editModal").find("input[name=show]").prop("checked", game.show)
-        $("#editModal").find("img").attr("src", `uploads/${game.logo_url}`)
-        $("#editModal input[type=hidden]").val(game.id)
-        $("#editModal").modal("show")
-    })
-
-    $("#editModal input[type=file]").change(function(){
-        $("#editModal img").attr("src", URL.createObjectURL($("#editModal input[type=file]").get(0).files[0]))
-    })
-</script>
 
 </html>
