@@ -1,6 +1,12 @@
 <?php 
 
-require_once("auth.php");
+session_start();
+
+if(!isset($_SESSION["username"]))
+{
+    header("Location: /gaming/login.php");
+    die;
+}
 
 function validate_create_form() 
 {

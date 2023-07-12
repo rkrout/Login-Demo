@@ -1,8 +1,21 @@
 <?php
 
-require_once("../auth.php");
+session_start();
+
+if(!isset($_SESSION["username"]))
+{
+    header("Location: /gaming/login.php");
+    die;
+}
 
 $games = json_decode(file_get_contents("../games.json"), true) ?? [];
+
+if(isset($_GET["action"]) && $_GET["action"] == "logout")
+{
+    unset($_SESSION["username"]);
+    header("Location: /gaming/login.php");
+    die();
+}
 
 ?>
 
@@ -29,60 +42,76 @@ $games = json_decode(file_get_contents("../games.json"), true) ?? [];
 
 <body>
     <div class="container my-5">
-        <button type="button" class="btn btn-primary mb-2" data-bs-toggle="modal" data-bs-target="#createModal">Create New</button>
+    <div class="fw-bold text-primary text-center h3 mb-4">Gaming Configuration</div>
+        <div class="card">
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <img src="/gaming/assets/img/bst_applogo.png" width="100px">
 
-        <table class="table table-bordered text-center">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Logo</th>
-                    <th>Link</th>
-                    <th>Target</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php if(count($games) == 0): ?>
-                    <tr>
-                        <td colspan="7">No Data Found</td>
-                    </tr>
-                <?php endif; ?>
+                <div class="d-flex align-items-center gap-2">
+                    <button type="button" class="btn btn-sm btn-primary d-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#createModal">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Create New</span>
+                    </button>
+                    <a href="?action=logout" class="btn btn-sm btn-warning" data-bs-toggle="tooltip" data-bs-title="Logout">
+                        <i class="fa fa-sign-out"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered text-center">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Logo</th>
+                            <th>Link</th>
+                            <th>Target</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if(count($games) == 0): ?>
+                            <tr>
+                                <td colspan="7">No Data Found</td>
+                            </tr>
+                        <?php endif; ?>
 
-                <?php foreach($games as $game): ?>
-                    <tr>
-                        <td><?= $game["id"] ?></td>
-                        <td><?= $game["name"] ?></td>
-                        <td>
-                            <img src="/gaming/uploads/<?= $game["logo_url"] ?>" width="60px" class="img-fluid">
-                        </td>
-                        <td>
-                            <a href="<?= $game["link"] ?>"><?= $game["link"] ?></a>
-                        </td>
+                        <?php foreach($games as $game): ?>
+                            <tr>
+                                <td><?= $game["id"] ?></td>
+                                <td><?= $game["name"] ?></td>
+                                <td>
+                                    <img src="/gaming/uploads/<?= $game["logo_url"] ?>" width="60px" class="img-fluid">
+                                </td>
+                                <td>
+                                    <a href="<?= $game["link"] ?>"><?= $game["link"] ?></a>
+                                </td>
 
-                        <td><?= $game["target"] ?></td>
+                                <td><?= $game["target"] ?></td>
 
-                        <td>
-                            <div class="d-inline-flex align-items-center gap-2">
-                                <?php if($game["show"]): ?>
-                                    <button type="submit" class="btn btn-sm btn-success btn-toggle" data-type="published" data-id='<?= $game["id"] ?>' data-bs-toggle="tooltip" data-bs-title="Unpublish Game">
-                                        <i class="fas fa-check"></i>
-                                    </button>
-                                <?php else: ?>
-                                    <button type="submit" class="btn btn-sm btn-danger btn-toggle" data-type="un_published" data-id='<?= $game["id"] ?>' data-bs-toggle="tooltip" data-bs-title="Publish Game">
-                                        <i class="fas fa-close"></i>
-                                    </button>
-                                <?php endif; ?>
+                                <td>
+                                    <div class="d-inline-flex align-items-center gap-2">
+                                        <?php if($game["show"]): ?>
+                                            <button type="submit" class="btn btn-sm btn-success btn-toggle" data-type="published" data-id='<?= $game["id"] ?>' data-bs-toggle="tooltip" data-bs-title="Click to unpublish">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                        <?php else: ?>
+                                            <button type="submit" class="btn btn-sm btn-danger btn-toggle" data-type="un_published" data-id='<?= $game["id"] ?>' data-bs-toggle="tooltip" data-bs-title="Click to publish">
+                                                <i class="fas fa-close"></i>
+                                            </button>
+                                        <?php endif; ?>
 
-                                <button data-game='<?= json_encode($game) ?>' type="button" class="btn btn-sm btn-secondary btn-edit" data-bs-toggle="tooltip" data-bs-title="Edit Game">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+                                        <button data-game='<?= json_encode($game) ?>' type="button" class="btn btn-sm btn-secondary btn-edit" data-bs-toggle="tooltip" data-bs-title="Edit Game">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <div class="page-loader position-absolute start-0 top-0 end-0 bottom-0 d-none align-items-center justify-content-center">
@@ -176,7 +205,7 @@ $games = json_decode(file_get_contents("../games.json"), true) ?? [];
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
                 </div>
             </div>
         </div>
@@ -321,19 +350,13 @@ $games = json_decode(file_get_contents("../games.json"), true) ?? [];
 
         if(response.status == 200)
         {
-            Toastify({
-                text: $(this).attr("data-type") == "un_published" ? "Game published successfully" : "Game unpublished successfully",
-                duration: 2000
-            }).showToast()
+            Toastify({ text: $(this).attr("data-type") == "un_published" ? "Game published successfully" : "Game unpublished successfully", duration: 2000 }).showToast()
 
             reload_table()
         }
         else 
         {
-            Toastify({
-                text: "Sorry, An unknown error occurred",
-                duration: 2000
-            }).showToast()
+            Toastify({ text: "Sorry, An unknown error occurred", duration: 2000 }).showToast()
         }
 
         $(this).attr("disabled", false)

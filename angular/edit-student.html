@@ -1,0 +1,18 @@
+<div class="card mx-auto" style="max-width: 600px">
+    <div class="card-header fw-bold text-primary">Edit Student</div>
+    <form class="card-body">
+        <div class="mb-3">
+            <label for="name" class="form-label">Name</label>
+            <input type="text" name="name" id="name" ng-model="student.name"  class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="text" name="email" id="email" ng-model="student.email" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="phone" class="form-label">Phone</label>
+            <input type="text" name="phone" id="phone" ng-model="student.phone" class="form-control">
+        </div>
+        <button type="button" class="btn btn-primary" ng-click="updateStudent()">Save Changes</button>
+    </form>
+</div>

@@ -16,8 +16,8 @@ $games = json_decode(file_get_contents("games.json"), true) ?? [];
   <meta content="" name="keywords">
 
   <!-- Favicons -->
-  <link href="assets/img/favicon.png" rel="icon">
-  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+  <link href="/gaming/assets/img/favicon.png" rel="icon">
+  <link href="/gaming/assets/img/apple-touch-icon.png" rel="apple-touch-icon">
 
   <!-- Google Fonts -->
   <link
@@ -25,12 +25,12 @@ $games = json_decode(file_get_contents("games.json"), true) ?? [];
     rel="stylesheet">
 
   <!-- Vendor CSS Files -->
-  <link href="assets/vendor/aos/aos.css" rel="stylesheet">
-  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="/gaming/assets/vendor/aos/aos.css" rel="stylesheet">
+  <link href="/gaming/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/gaming/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
 
   <!-- Template Main CSS File -->
-  <link href="assets/css/style.css" rel="stylesheet">
+  <link href="/gaming/assets/css/style.css" rel="stylesheet">
 
   <style>
     .circles {
@@ -191,8 +191,8 @@ $games = json_decode(file_get_contents("games.json"), true) ?? [];
       <div class="container">
 
         <div class="section-title" data-aos="fade-up">
-          <h2><img src="assets/img/icon/gaming_img.png" alt="" style="width:200px; margin:10px auto 10px auto;"></h2>
-          <p class="fw-bold">Powered by <span style="color:#7a2a83;"><img src="assets/img/icon/hounslow_council.png"
+          <h2><img src="/gaming/assets/img/icon/gaming_img.png" alt="" style="width:200px; margin:10px auto 10px auto;"></h2>
+          <p class="fw-bold">Powered by <span style="color:#7a2a83;"><img src="/gaming/assets/img/icon/hounslow_council.png"
                 style="width: 150px;" /></span></p>
         </div>
 
@@ -233,11 +233,11 @@ $games = json_decode(file_get_contents("games.json"), true) ?? [];
 
 
   <!-- Vendor JS Files -->
-  <script src="assets/vendor/aos/aos.js"></script>
-  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="/gaming/assets/vendor/aos/aos.js"></script>
+  <script src="/gaming/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
   <!-- Template Main JS File -->
-  <script src="assets/js/main.js"></script>
+  <script src="/gaming/assets/js/main.js"></script>
 
 </body>
 
