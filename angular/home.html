@@ -1,38 +1,46 @@
 <a href="#!/create" class="btn btn-primary mb-3">Create New</a>
 
-<div ng-switch="isLoading">
-    <div ng-switch-when="true" class="text-center mt-4">
-        <div class="spinner-border text-dark" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
-    </div>
 
-    <table ng-switch-when="false" class="table table-bordered text-center">
-        <thead>
-            <tr>
-                <th scope="col">ID</th>
-                <th scope="col">Name</th>
-                <th scope="col">Email</th>
-                <th scope="col">Phone</th>
-                <th scope="col">Image</th>
-                <th scope="col">Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr ng-repeat="student in students">
-                <th scope="row">{{ student.id }}</th>
-                <td>{{ student.name }}</td>
-                <td>{{ student.email }}</td>
-                <td>{{ student.phone }}</td>
-                <td>
-                    <img ng-src="{{ student.image_url }}" width="50px" class="img-fluid"/>
-                    <p ng-show="student.image_url.length == 0">NA</p>
-                </td>
-                <td>
-                    <a href="#!/edit?id={{student.id}}" class="btn btn-warning btn-sm">Edit</a>
-                    <button ng-click="deleteStudent(student.id)" class="btn btn-danger btn-sm">Delete</button>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</div>
+<table class="table table-bordered text-center">
+    <thead>
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Name</th>
+            <th scope="col">Email</th>
+            <th scope="col">Phone</th>
+            <th scope="col">Image</th>
+            <th scope="col">Courses</th>
+            <th scope="col">Active</th>
+            <th scope="col">Gender</th>
+            <th scope="col">Address</th>
+            <th scope="col">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="student in students">
+            <th>{{ student.id }}</th>
+            <td>{{ student.name }}</td>
+            <td>{{ student.email }}</td>
+            <td>{{ student.phone }}</td>
+            <td>
+                <img ng-if="student.image_url != null" ng-src="{{ student.image_url }}" style="height: 40px; width: 40px; object-fit: cover; border-radius: 100%;"/>
+                <p ng-if="student.image_url == null">NA</p>
+            </td>
+            <td>
+                <span ng-repeat="course in student.courses">{{ course }} {{ $index == student.courses.length - 1 ? "" : ", " }}</span>
+                <p ng-show="student.courses.length == 0">NA</p>
+            </td>
+            <td>
+                {{ student.is_active ? "Yes" : "No" }}
+            </td>
+            <td>
+                {{ student.gender }}
+            </td>
+            <td>{{ student.address }}</td>
+            <td>
+                <a href="#!/edit?id={{ student.id }}" class="btn btn-warning btn-sm">Edit</a>
+                <button ng-click="deleteStudent(student.id)" class="btn btn-danger btn-sm">Delete</button>
+            </td>
+        </tr>
+    </tbody>
+</table>
